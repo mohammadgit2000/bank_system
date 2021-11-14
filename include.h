@@ -1,3 +1,7 @@
+#include<iostream>
+
+using namespace std;
+
 #ifndef INCLUDE_G
 #define INCLUDE_G
 
@@ -5,7 +9,7 @@
 class user
 {
     public :
-    void set_name(string name);
+    void set_name(string);
     string get_name();
 
     private :
