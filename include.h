@@ -1,5 +1,3 @@
-#include<iostream>
-
 #ifndef INCLUDE_G
 #define INCLUDE_G
 
