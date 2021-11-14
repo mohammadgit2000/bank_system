@@ -6,6 +6,11 @@
 
 class user
 {
+    public :
+    void set_name(string name);
+    string get_name();
+
+    private :
     string name;
     unsigned int card_number;
     unsigned short int opening_account_year;
