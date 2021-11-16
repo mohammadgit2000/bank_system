@@ -11,7 +11,8 @@ class user
     public :
     void set_name(const string &);
     string get_name();
-
+    void set_ip(string);
+    string get_ip();
 
     private :
     string name = "empty";
