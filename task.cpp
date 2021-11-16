@@ -150,7 +150,7 @@ void Check_User_Name(string & input_string , user * customer_cls)
             Re_Enter_String(input_string ,customer_cls);
         }
         
-        
+
 
         break;
     
@@ -252,4 +252,16 @@ void user:: set_name(const string & user_name)
 string user::get_name()
 {
     return name;
+}
+
+
+void user::set_ip (string ip_string)
+{
+    ip_of_account = ip_string;
+}
+
+
+string user::get_ip()
+{
+    return ip_of_account;
 }
