@@ -12,6 +12,7 @@ class user
     void set_name(const string &);
     string get_name();
 
+
     private :
     string name = "empty";
     unsigned int card_number;
@@ -22,6 +23,7 @@ class user
     unsigned long long int balance = 0;
     string * record_ptr = nullptr;
     string * ip_lists_ptr = nullptr;
+    string ip_of_account = 0 ;
 };
 
 
