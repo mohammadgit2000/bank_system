@@ -9,11 +9,11 @@ using namespace std;
 class user
 {
     public :
-    void set_name(string);
+    void set_name(const string &);
     string get_name();
 
     private :
-    string name;
+    string name = "empty";
     unsigned int card_number;
     unsigned short int opening_account_year;
     unsigned short int opening_account_month;
@@ -25,5 +25,8 @@ class user
 };
 
 
+void Check_User_Name(string &  , user * );
+void Re_Enter_String(string & ,user *);
+user * Increase_Class(user * );
 
 #endif
