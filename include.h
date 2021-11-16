@@ -9,13 +9,13 @@ using namespace std;
 class user
 {
     public :
-    void set_name(const string &);
-    string get_name();
+    void set_user_name(const string &);
+    string get_user_name();
     void set_ip(string);
     string get_ip();
 
     private :
-    string name = "empty";
+    string user_name = "empty";
     unsigned int card_number;
     unsigned short int opening_account_year;
     unsigned short int opening_account_month;
