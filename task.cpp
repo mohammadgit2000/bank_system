@@ -41,7 +41,7 @@ void Check_User_Name(string & input_string , user * customer_cls)
         }
     }
     
-    if (count_default_string == 0 && customer_cls[global_count - 1].get_name() != "empty")
+    if (count_default_string == 0 && customer_cls[global_count - 1].get_user_name() != "empty")
     {
         customer_cls = Increase_Class(customer_cls);
     }
@@ -150,7 +150,8 @@ void Check_User_Name(string & input_string , user * customer_cls)
             Re_Enter_String(input_string ,customer_cls);
         }
         
-
+        customer_cls[global_count - 1 ].set_user_name(user_name);
+        customer_cls[global_count - 1].set_ip(ip_string);
 
         break;
     
@@ -243,15 +244,15 @@ user * Increase_Class(user * old_class )
 
 
 
-void user:: set_name(const string & user_name)
+void user:: set_user_name(const string & username)
 {
-    name = user_name;
+    user_name = username;
 }
 
 
-string user::get_name()
+string user::get_user_name()
 {
-    return name;
+    return user_name;
 }
 
 
