@@ -29,17 +29,6 @@ void Check_User_Name(string & input_string , user *& customer_class)
     unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
     /* valid ip have 4 part of number like --->  123.25.147.59 */
 
-    switch (number_of_known_command) // Each command has its own text
-    {
-        case 0 : // mean user entered "create" command .
-        
-        if (information_added == true) 
-        { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
-
-            customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
-            
-        } // end of outer if
-
         len_default_string = default_command[number_of_known_command].size(); // calculate length of "create" command .
 
         if( Is_Char_Exist(' ' ,input_string , len_default_string , false) == false )
@@ -66,8 +55,7 @@ void Check_User_Name(string & input_string , user *& customer_class)
             save_username += input_string[len_default_string]; // Isolation of usernames
             len_default_string++; // go to next word .
         }
-    
-        
+
         if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true )
         {
             Print_Eror("We Can Not Detect IP" , "IP Not Entered");
@@ -75,7 +63,17 @@ void Check_User_Name(string & input_string , user *& customer_class)
             information_added = false; // pre account was not use .
             Re_Enter_String(input_string , customer_class); // enter string again .
         }
+
+    switch (number_of_known_command) // Each command has its own text
+    {
+        case 0 : // mean user entered "create" command .
         
+        if (information_added == true) 
+        { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
+
+            customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
+            
+        } // end of outer if
 
         len_default_string++; // go to next word .
 
