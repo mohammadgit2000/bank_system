@@ -1,6 +1,7 @@
 #include"../inc/include.h"
 #include<iostream>
 #include<cctype>
+#include<ctime>
 
 #define SIZE 1
 
@@ -13,9 +14,9 @@ void Check_User_Name(string & input_string , user *& customer_class)
 {
     string default_command[] = {"create"};
 
-    unsigned short int count_default_string ;
+    unsigned short int number_of_known_command ;
 
-    if(Is_Command_Entred(input_string ,count_default_string) == false)
+    if(Is_Command_Entred(input_string ,number_of_known_command) == false)
     {
         Re_Enter_String(input_string ,customer_class);
     }
@@ -28,7 +29,7 @@ void Check_User_Name(string & input_string , user *& customer_class)
     unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
     /* valid ip have 4 part of number like --->  123.25.147.59 */
 
-    switch (count_default_string) // Each command has its own text
+    switch (number_of_known_command) // Each command has its own text
     {
         case 0 : // mean user entered "create" command .
         
@@ -39,58 +40,63 @@ void Check_User_Name(string & input_string , user *& customer_class)
             
         } // end of outer if
 
-        len_default_string = default_command[count_default_string].size(); // calculate length of "create" command .
+        len_default_string = default_command[number_of_known_command].size(); // calculate length of "create" command .
 
-        // if (input_string[len_default_string] != ' ') // after known command must be space . create username:ip  ...
-        // {
-        //     Print_Eror("There should be a space after the command" , "Invalid Entrance String");
-        //     system("pause");
-        //     information_added = false; // maen pre account was not use ..
-        //     Re_Enter_String(input_string , customer_class); // user must enter string agian ..s
-        // } // end of if 
+        if( Is_Char_Exist(' ' ,input_string , len_default_string , false) == false )
+        {
+            Print_Eror("Invalid Entrance Command" , "empty");
+            system("pause");
+            information_added = false; // maen pre account was not use ..
+            Re_Enter_String(input_string ,customer_class);
+        }
         
         len_default_string++; // go to next word index ..
-
-        // if ( isdigit( input_string[len_default_string] ) ) // We cannot put a number at the beginning of the name
-        // {
-        //     Print_Eror("Invalid User Name . User Name Can not Begin With Number");
-        //     system("pause");
-        //     information_added = false; // mean pre account was not use ...
-        //     Re_Enter_String(input_string , customer_class); // enter string again .
-        // } // end of if
+        
+        if ( Is_Char_Exist(' ' , input_string ,len_default_string ,true) == true )
+        {
+            Print_Eror("Invalid User Name . User Name Can not Begin With Number" , "empty");
+            information_added = false; // mean pre account was not use ...
+            system("pause");
+            Re_Enter_String(input_string ,customer_class);
+        }
         
 
-        while (input_string[len_default_string] != ':' && input_string[len_default_string] != '\0') // read string until reaches to : 
+        while ( input_string[len_default_string] != ':' && input_string[len_default_string] != '\0' ) // read string until reaches to : 
         {
             save_username += input_string[len_default_string]; // Isolation of usernames
             len_default_string++; // go to next word .
         }
+    
         
-        // if (input_string[len_default_string] == '\0') // if after username we reach to end .. like --> create mamad 
-        // {
-        //     Print_Eror("We Can Not Detect IP" , "IP Not Entered");
-        //     system("pause");
-        //     information_added = false; // pre account was not use .
-        //     Re_Enter_String(input_string , customer_class); // enter string again .
-        // } // end of if
+        if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true )
+        {
+            Print_Eror("We Can Not Detect IP" , "IP Not Entered");
+            system("pause");
+            information_added = false; // pre account was not use .
+            Re_Enter_String(input_string , customer_class); // enter string again .
+        }
         
+
         len_default_string++; // go to next word .
 
-        // if (input_string[len_default_string] == '\0') // like ---> create mamad:    we have not ip 
-        // {
-        //     Print_Eror("We Can Not Detect IP" , "IP Not Entered");
-        //     system("pause");
-        //     information_added = false; // pre account was not use .
-        //     Re_Enter_String(input_string , customer_class); // enter string again .
-        // } // end of if 
+
+        if ( Is_Char_Exist('\0' , input_string ,len_default_string ,false) == true )
+        {
+            Print_Eror("We Can Not Detect IP" , "IP Not Entered");
+            system("pause");
+            information_added = false; // pre account was not use .
+            Re_Enter_String(input_string , customer_class); // enter string again .
+        }
         
-        // if (input_string[len_default_string] == '.') // like ---> create mamad:.   without ip numbers .
-        // {
-        //     Print_Eror("IP Not Entered . Just Dot Entered" , "Invalid IP Entered");
-        //     system("pause");
-        //     information_added = false; // pre account was not use .
-        //     Re_Enter_String(input_string ,customer_class); // enter steirg again .
-        // } // end of if
+
+        if ( Is_Char_Exist('.' , input_string ,len_default_string ,false) == true )
+        {
+            Print_Eror("IP Not Entered . Just Dot Entered" , "Invalid IP Entered");
+            system("pause");
+            information_added = false; // pre account was not use .
+            Re_Enter_String(input_string ,customer_class); // enter steirg again .
+        }
+        
         
         
         while (input_string[len_default_string] != '\0') // read ip until reaches to end .
@@ -98,82 +104,82 @@ void Check_User_Name(string & input_string , user *& customer_class)
             int convert_number = stoi(&input_string[len_default_string]); // convert stirng to int for check valid ip .
             count_part_digit++;
 
-            // if (convert_number >= 256) // ip validation
-            // {
-            //     Print_Eror("IP should be between 0 and 255" , "Invalid IP Entered");
-            //     system("pause");
-            //     information_added = false; // pre account was not use .
-            //     Re_Enter_String(input_string ,customer_class); // string must be enter again .
-            // } // end of if 
-            
+            if ( Is_First_Bigger_Number(convert_number , 256) == true )
+            {
+                Print_Eror("IP should be between 0 and 255" , "Invalid IP Entered");
+                system("pause");
+                information_added = false; // pre account was not use .
+                Re_Enter_String(input_string ,customer_class); // string must be enter again .
+            }
 
             while (input_string[len_default_string] != '.' && input_string[len_default_string] != '\0') 
             { /* adding valid ip to another string (ip isolation) */
+
                 save_ip += input_string[len_default_string]; 
                 len_default_string++; // go to next word .
             }
             
-            // if (input_string[len_default_string] == '\0' && count_part_digit != 4) // like ---> create mamad:123
-            // {
-            //     Print_Eror("Invalid IP Entered");
-            //     system("pause");
-            //     information_added = false; // pr acoount was not use .
-            //     Re_Enter_String(input_string , customer_class); // enter string again .
-            // } // end of if
+
+            if ( ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) && count_part_digit != 4 )
+            {
+                Print_Eror("Invalid IP Entered" , "empty");
+                system("pause");
+                information_added = false; // pr acoount was not use .
+                Re_Enter_String(input_string , customer_class); // enter string again .
+            }
             
+
             if (input_string[len_default_string] == '.') // dot counter . dot should be 3 .
             {
                 count_dot++; // added one by one .
                 
-                // if (count_dot >= 4)
-                // {
-                //     Print_Eror("IP Should Be 3 Dots" , "Invalid IP Entered");
-                //     system("pause");
-                //     information_added = false; // pre account was not use .
-                //     Re_Enter_String(input_string , customer_class); // enter string again.
-                // } // end of inner if
+                if ( Is_First_Bigger_Number(count_dot , 4) == true )
+                {
+                    Print_Eror("IP Should Be 3 Dots" , "Invalid IP Entered");
+                    system("pause");
+                    information_added = false; // pre account was not use .
+                    Re_Enter_String(input_string , customer_class); // enter string again.
+                }
 
-                    // if (input_string[len_default_string + 1] == '.')
-                    // {
-                    //     Print_Eror("We Detect Extra Dots In IP" , "Invalid IP Entered");
-                    //     system("pause");
-                    //     information_added = false; // pre account was not use .
-                    //     Re_Enter_String(input_string , customer_class); // enter string again.
-                    // }
                     
+                if ( Is_Char_Exist('.' , input_string ,len_default_string + 1 ,false) == true )
+                {
+                    Print_Eror("We Detect Extra Dots In IP" , "Invalid IP Entered");
+                    system("pause");
+                    information_added = false; // pre account was not use .
+                    Re_Enter_String(input_string , customer_class); // enter string again.
+                }
+
                 save_ip += input_string[len_default_string]; // adding dot to ip_string .
                 len_default_string++; // go to next word .
+
             } // end outer of if
-        } // rnd og while 
 
-        // if (count_dot <= 2 || count_dot >= 4 ) // valid ip should be have 3 dots . ---> create mamad:123.45.104.36
-        // {
-        //     Print_Eror("Invalid IP Entered");
-        //     system("pause");
-        //     information_added = false; // pre account was not use .
-        //     Re_Enter_String(input_string ,customer_class); // enter string again .
-        // }
+        } // end of while 
 
-        // if ( count_part_digit <= 3 )
-        // {
-        //     Print_Eror("A valid IP has 4 sections of numbers");
-        //     system("pause");
-        //     information_added = false;
-        //     Re_Enter_String(input_string ,customer_class);
-        // }
+
+        if ( ( Is_First_Bigger_Number(count_dot , 4) == true ) || ( Is_First_Bigger_Number(2 , count_dot) == true ) )
+        {
+            Print_Eror("Invalid IP Entered" , "empty");
+            system("pause");
+            information_added = false; // pre account was not use .
+            Re_Enter_String(input_string ,customer_class); // enter string again .
+        }
+        
+        if ( Is_First_Bigger_Number(3 , count_part_digit) == true )
+        {
+            Print_Eror("A valid IP has 4 sections of numbers" , "empty");
+            system("pause");
+            information_added = false;
+            Re_Enter_String(input_string ,customer_class);
+        }
+        
 
         customer_class[global_count - 1 ].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
-        // customer_class->set_user_name(save_username);
-        // customer_class->set_ip(save_ip);
-        // cout << "global count " << global_count << endl;
-        // cout << "address " << customer_class << endl;
-        // cout << customer_class[global_count - 1].get_user_name() << endl;
-        // cout << customer_class[global_count - 1].get_ip() << endl;
-        // system("pause");
-        /* because it`s begin from 0  */
+
         information_added = true; // that`s mean we used the created account .and now we can add account for next user .
-        cout << "address of class\t" << customer_class <<  endl;
+
         break; // break of switch case 
     
     }
@@ -240,7 +246,7 @@ user * Increase_Class(user *& old_class ) // add one class to pre classes and co
 
     if (first_entrance == false) // mean we enter this function at the first time .
     {
-        first_entrance = true;
+        first_entrance = true; // true mean that we enter this section at the first time .
         user * new_class = new user; // create one class .
         delete old_class;
         global_count++; // adding to global count . global_coumt was 0 and in this section we will add one to it .
@@ -254,7 +260,7 @@ user * Increase_Class(user *& old_class ) // add one class to pre classes and co
 
             for (size_t i = 0; i < global_count ; i++) // copy information of pre classes to new classes (size increased)
             {
-                new_class[i] = old_class[i];
+                new_class[i] = old_class[i]; // copy elements of pre class to new class .
             }
             
             delete [] old_class;
@@ -264,80 +270,89 @@ user * Increase_Class(user *& old_class ) // add one class to pre classes and co
 }
 
 
-void user:: set_user_name(string username) // this function set entrance user_name with class variable .
+void user :: set_user_name(string username) // this function set entrance user_name with class variable .
 {
-    user_name = username;
+    user_name = username; // store entrance username in the class variable .
 }
 
 
-string user::get_user_name() // return username of customer account .
+string user :: get_user_name() // return username of customer account .
 {
-    return this->user_name;
+    return this->user_name; // return username of account from class variable .
 }
 
 
-void user::set_ip (string ip_string) // set ip that entered in the create time .
+void user :: set_ip (string ip_string) // set ip that entered in the create time .
 {
-    ip_of_account = ip_string;
+    ip_of_account = ip_string; // store entrance of ip in the ip variable of class.
 }
 
 
-string user::get_ip() // return ip of cutomer account .
+string user :: get_ip() // return ip of cutomer account .
 {
-    return this->ip_of_account;
+    return this->ip_of_account; // return ip of account from class variable .
 }
 
-void Print_Eror(string first_string ,string second_string )
-{
-    for (size_t i = 0; i < first_string.size() / 2 ; i++)
+
+void Print_Eror(string first_string ,string second_string ) // we make the format from first string .
+{ /* take two string and print them in the eror format  */
+
+    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif of format we do this ---> /2
     {
-        if (i == 0 || i == (first_string.size() / 2 ) - 1 )
+        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the fisrt and last of format we put '+' .
         {
             cout << "+  ";
             continue;
         }
 
-        cout << "-  " ;
+        cout << "-  " ; // we make format with this character ' - '  
     }
+
     cout << endl;
-    cout << endl << "      " << first_string << endl;
-    if (second_string != "empty")
+    cout << endl << "      " << first_string << endl; // first eror text writed here .
+
+    if (second_string != "empty") // if we two eror we write here second eror .
     {
         cout << "            " << second_string << endl;
     }
     
     cout << endl;
-    for (size_t i = 0; i < first_string.size() / 2 ; i++)
+
+    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif format we do this --> /2
     {
-        if (i == 0 || i == (first_string.size() / 2 ) - 1 )
+        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the first and last of foramt we put ' + ' character .
         {
             cout << "+  ";
             continue;
         }
 
-        cout << "-  " ;
+        cout << "-  " ; // we make format with this character ' - ' 
     }
+
+    cout << endl;
 }
 
-bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string)
-{
-    string default_command[] = {"create"};
-    bool find_command = false;
-    int find_out_put;
+
+bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string) // if we find command return true else false .
+{ /* if command exist in the string return true else return false */
+
+    string default_command[] = {"create"}; // all of command that we can recognize in this program .
+    bool find_command = false; // false means that we can not find default command in the entracne string .
+    int find_out_put; // we store out put of find function in this variable .
     
         for (count_default_string = 0; count_default_string < SIZE ; count_default_string++)
     {
         find_out_put = input_string.find(default_command[count_default_string]);
 
-        if (find_out_put >= 0)
+        if (find_out_put >= 0) // means that we find command in the string .
         {
-            find_command = true;
+            find_command = true; // means that we find command .
             break;
         }
     }
     
     if (input_string.size() == default_command[count_default_string].size()) 
-    { // mean entrance string not complete and just entered known commands .
+    { // mean entrance string not complete and just entered known commands . like this example ---> create 
 
         Print_Eror("You Just Entered Known Command without Information" , "Command Not Complete");
         system("pause");
@@ -354,7 +369,8 @@ bool Is_Command_Entred(string & input_string , unsigned short int & count_defaul
     if (find_command == true) // mean command find in the entrance string ...
     {
         if (find_out_put != 0) //that mean command was not entered at the first of string ..
-        {
+        { /* maybe like this example ---> abcd create mamad:1.2.3.4 */
+
             Print_Eror("Command Must Be In The First Of String" , "empty");
             system("pause");
             return false;
@@ -362,4 +378,71 @@ bool Is_Command_Entred(string & input_string , unsigned short int & count_defaul
     }
 
     return true;
+}
+
+
+user :: user() // constructore just create opening and expiration date of account ..
+{
+    time_t now = time(0);
+
+    tm * date = localtime(&now);
+
+    opening_account_year = date->tm_year + 1900; // we recive year from this function and store it .
+    opening_account_month = date->tm_mon + 1; // we recive month from this finction and store it .
+    opening_account_day = date->tm_mday; // we recive day from this finction and store it .
+
+    expiration_account_year = opening_account_year + 2; // now we can make expiration of account . we add two year to it .
+}
+
+
+unsigned short int user :: get_opening_year() // return opening yeaer of account .
+{
+    return opening_account_year ; // return opening year of account from class .
+}
+
+
+unsigned short int user :: get_opening_month() // return opening month of account .
+{
+    return opening_account_month; // return opening month of account from class
+}
+
+
+unsigned short int user :: get_opening_day() // return opening day of account .
+{
+    return opening_account_day ; // return opening day of account from class .
+}
+
+
+unsigned short int user :: get_expiration_year() // return expiration of account .
+{
+    return expiration_account_year ; //return expiration of account feom class .
+}
+
+
+bool Is_Char_Exist(char word, string & input_string ,unsigned short int index , bool is_number) // compare entrance word with one of string index
+{
+    if (is_number) // if is_number is true we enter this section for number checker.
+    {
+        if ( isdigit( input_string[index] ) ) // We cannot put a number at the beginning of the name
+        {
+            return true ; // means that there is number in the index of string .
+        }
+
+        return false; // means that there is not number in the index of string .
+    }
+        else // if is_number is false we enter this section for character checker .
+        {
+            if (input_string[index] == word) 
+            {
+                return true; // mean that there is given character in the index of string .
+            }
+
+            return false; // means that there is not character in the index of string .
+        }
+}
+
+
+bool Is_First_Bigger_Number(int first_number ,int second_number ) // if first number bigger than second number we return true .
+{
+    return first_number >= second_number ; // if fisrt number bigger than second number we return true else return false .
 }

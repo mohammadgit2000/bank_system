@@ -18,7 +18,12 @@ int main()
     system("cls");
     
     Re_Enter_String(input_string , customer_cls);
-    
+
+    cout << "user name \t" << customer_cls[global_count - 1].get_user_name() << endl;
+    cout << "ip \t" << customer_cls[global_count - 1].get_ip() << endl;
+    cout << "yeaer month day \t" << customer_cls[global_count - 1].get_opening_year()
+    << " " << customer_cls[global_count - 1].get_opening_month() << " " << customer_cls[global_count - 1].get_opening_day() << endl;
+    cout <<"expiration of account " << customer_cls[global_count - 1].get_expiration_year();
 
     return 0 ;
 }
