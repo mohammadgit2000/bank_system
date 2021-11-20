@@ -296,6 +296,7 @@ string user :: get_ip() // return ip of cutomer account .
 
 void Print_Eror(string first_string ,string second_string ) // we make the format from first string .
 { /* take two string and print them in the eror format  */
+    cout << endl;
 
     for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif of format we do this ---> /2
     {
@@ -329,7 +330,7 @@ void Print_Eror(string first_string ,string second_string ) // we make the forma
         cout << "-  " ; // we make format with this character ' - ' 
     }
 
-    cout << endl;
+    cout << endl << endl;
 }
 
 
