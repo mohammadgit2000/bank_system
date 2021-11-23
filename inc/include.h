@@ -17,6 +17,8 @@ class user
     unsigned short int  get_opening_month(); // return opening month of account .
     unsigned short int get_opening_day(); // return opening day of account .
     unsigned short int get_expiration_year(); // return expiratoin of account .
+    void set_card_number(unsigned int);
+    unsigned int get_card_number();
 
     private :
     string user_name = "empty" ; // The username is stored in this variable .
@@ -32,12 +34,12 @@ class user
 };
 
 
-void Check_User_Namr(string & ,user *&); // username and ip validation .
 void Re_Enter_String(string & ,user *&); // if entreance information was wrong we call this function again .
+void Check_User_Name(string & ,user *&); // username and ip validation .
 user * Increase_Class(user *&); // increase size of class array and copy pre class`s information in new class array that increased .
 void Print_Eror(string ,string); // recive two string and print them in format of eror .
 bool Is_Command_Entred(string &  , unsigned short int & ); // if command exist in the entrance string return true else return false .
 bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character of word exist in index of string we return true .
-bool Is_First_Bigger_Number(int ,int); // if first number bigger than second number we return true .
+bool Create_And_Check_Card_Number(user *&);
 
 #endif
