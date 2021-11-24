@@ -171,10 +171,8 @@ void Check_User_Name(string & input_string , user *& customer_class)
 
     string save_username; // add username to this variable .
     string save_ip; // add user`s ip to this variable .
-    unsigned int len_default_string; // calculate length of known command like "create" command .
-    unsigned short int count_ip_dot = 0; // calculate dots in the ip .
-    unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
-    /* valid ip have 4 part of number like --->  123.25.147.59 */
+    unsigned short int len_default_string; // calculate length of known command like "create" command .
+
 
         len_default_string = default_command[number_of_known_command].size(); // calculate length of "create" command .
 
@@ -183,7 +181,7 @@ void Check_User_Name(string & input_string , user *& customer_class)
 
             Print_Eror("Invalid Entrance Command" , "empty");
             system("pause");
-            complete_bank_accoount = false; // maen pre account was not use ..
+            // complete_bank_accoount = false; // maen pre account was not use ..
             Re_Enter_String(input_string ,customer_class);
         }
         
@@ -193,32 +191,20 @@ void Check_User_Name(string & input_string , user *& customer_class)
         {// first character of username can not begin with number like this --> create 1mamad
 
             Print_Eror("Invalid User Name . User Name Can not Begin With Number" , "empty");
-            complete_bank_accoount = false; // mean pre account was not use ...
+            // complete_bank_accoount = false; // mean pre account was not use ...
             system("pause");
             Re_Enter_String(input_string ,customer_class);
         }
-        
 
-        while ( input_string[len_default_string] != ':' && input_string[len_default_string] != '\0' ) // read string until reaches to : 
-        {
-            if (ispunct(input_string[len_default_string]))
-            {
-                Print_Eror("Can Not Enter Punctuation Character" , "empty");
-                system("pause");
-                complete_bank_accoount = false; // pre account was not use .
-                Re_Enter_String(input_string , customer_class); // enter string again .
-            }
-            
-            save_username += input_string[len_default_string]; // Isolation of usernames
-            len_default_string++; // go to next word .
-        }
+        
+        Read_User_Name(input_string ,len_default_string ,customer_class ,save_username);
 
 
         if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) // like this create mamad
         {
             Print_Eror("We Can Not Detect IP" , "IP Not Entered");
             system("pause");
-            complete_bank_accoount = false; // pre account was not use .
+            // complete_bank_accoount = false; // pre account was not use .
             Re_Enter_String(input_string , customer_class); // enter string again .
         }
 
@@ -237,6 +223,13 @@ void Check_User_Name(string & input_string , user *& customer_class)
             }
             
             Print_Eror("You Can Not Register A New Bank Account" , "Out Of Range") ;
+            Re_Enter_String(input_string , customer_class);
+        }
+        
+        if (Is_Repetitive_UserName(customer_class ,save_username))
+        {
+            Print_Eror("You Can Not Enter Same Name Like Pre Bank Accounts" , "empty");
+            system("pause");
             Re_Enter_String(input_string , customer_class);
         }
         
@@ -267,88 +260,19 @@ void Check_User_Name(string & input_string , user *& customer_class)
             complete_bank_accoount = false; // pre account was not use .
             Re_Enter_String(input_string ,customer_class); // enter steirg again .
         }
-        
-        
-        while (input_string[len_default_string] != '\0') // read ip until reaches to end .
-        {
-            int convert_number = stoi(&input_string[len_default_string]); // convert stirng to int for check valid ip .
-            count_part_digit++;
-
-            if (convert_number >= 256)
-            {
-                Print_Eror("IP should be between 0 and 255" , "Invalid IP Entered");
-                system("pause");
-                complete_bank_accoount = false; // pre account was not use .
-                Re_Enter_String(input_string ,customer_class); // string must be enter again .
-            }
-
-
-            while (input_string[len_default_string] != '.' && input_string[len_default_string] != '\0') 
-            { /* adding valid ip to another string (ip isolation) */
-
-                save_ip += input_string[len_default_string]; 
-                len_default_string++; // go to next word .
-            }
-            
-
-            if ( ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) && count_part_digit != 4 )
-            { // like this ---> create mamad:1.2
-
-                Print_Eror("Invalid IP Entered" , "empty");
-                system("pause");
-                complete_bank_accoount = false; // pr acoount was not use .
-                Re_Enter_String(input_string , customer_class); // enter string again .
-            }
-            
-
-            if (input_string[len_default_string] == '.') // dot counter . dot should be 3 .
-            {
-                count_ip_dot++; // added one by one .
-                
-                if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
-                {
-                    Print_Eror("IP Should Be 3 Dots" , "Invalid IP Entered");
-                    system("pause");
-                    complete_bank_accoount = false; // pre account was not use .
-                    Re_Enter_String(input_string , customer_class); // enter string again.
-                }
-
-                    
-                if ( Is_Char_Exist('.' , input_string ,len_default_string + 1 ,false) == true ) // if we have extra dot in ip
-                { // like this ---> create mamad:..  ---- create mamad:1.2...
-
-                    Print_Eror("We Detect Extra Dots In IP" , "Invalid IP Entered");
-                    system("pause");
-                    complete_bank_accoount = false; // pre account was not use .
-                    Re_Enter_String(input_string , customer_class); // enter string again.
-                }
-
-                save_ip += input_string[len_default_string]; // adding dot to ip_string .
-                len_default_string++; // go to next word .
-
-            } // end outer of if
-
-        } // end of while 
-
-
-        if ( count_ip_dot >= 4 || count_ip_dot <= 2 ) // if dots invalid we enter this section . like ---> 1.2 or 1.2.3.4.5.6
-        {
-            Print_Eror("Invalid IP Entered" , "empty");
-            system("pause");
-            complete_bank_accoount = false; // pre account was not use .
-            Re_Enter_String(input_string ,customer_class); // enter string again .
-        }
 
         
-        if (count_part_digit >= 5 || count_part_digit <= 3) // if we have invalid ip like ---> 1.2.3.4.5.6
+        Read_IP(input_string ,len_default_string ,customer_class ,save_ip);
+        
+        
+        while ( Is_Repetitive_ip(customer_class , save_ip) )
         {
-            Print_Eror("A valid IP has 4 sections of numbers" , "empty");
-            system("pause");
-            complete_bank_accoount = false;
-            Re_Enter_String(input_string ,customer_class);
+            Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
+            cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
+            cout << "Like This Example ---> 1.2.3.4" << endl;
+            Read_IP(input_string ,len_default_string ,customer_class ,save_ip);
         }
         
-
         customer_class[global_count - 1 ].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
 
@@ -371,6 +295,32 @@ void Check_User_Name(string & input_string , user *& customer_class)
 }
 
 
+bool Is_Repetitive_UserName(user *& customer_class , string & username) // Prevents the same name from being added to the bank account
+{
+    for (size_t i = 0; i < global_count ; i++)
+    {
+        if (username == customer_class[i].get_user_name())
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+bool Is_Repetitive_ip(user *& customer_class , string & ip_string)
+{
+    for (size_t i = 0; i < global_count; i++)
+    {
+        if (ip_string == customer_class[i].get_ip())
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 
 user * Increase_Class(user *& old_class ) // add one class to pre classes and copy pre classes to new class that increased .
@@ -554,3 +504,109 @@ bool Is_Char_Exist(char word, string & input_string ,unsigned short int index , 
             
 //     }
 // }
+
+
+void Read_User_Name(string & input_string , unsigned short int & begin_len , user *& customer_class , string & save_username)
+{
+    while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
+    {
+        if (ispunct(input_string[begin_len]))
+        {
+            Print_Eror("Can Not Enter Punctuation Character" , "empty");
+            system("pause");
+            // complete_bank_accoount = false; // pre account was not use .
+            Re_Enter_String(input_string , customer_class); // enter string again .
+        }
+            
+        save_username += input_string[begin_len]; // Isolation of usernames
+        begin_len++; // go to next word .
+    }
+}
+
+
+
+void Read_IP(string & input_string , unsigned short int & begin_len ,user *& customer_class , string & save_ip)
+{
+    unsigned short int count_ip_dot = 0; // calculate dots in the ip .
+    unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
+    /* valid ip have 4 part of number like --->  123.25.147.59 */
+
+        while (input_string[begin_len] != '\0') // read ip until reaches to end .
+        {
+            int convert_number = stoi(&input_string[begin_len]); // convert stirng to int for check valid ip .
+            count_part_digit++;
+
+            if (convert_number >= 256)
+            {
+                Print_Eror("IP should be between 0 and 255" , "Invalid IP Entered");
+                system("pause");
+                complete_bank_accoount = false; // pre account was not use .
+                Re_Enter_String(input_string ,customer_class); // string must be enter again .
+            }
+
+
+            while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
+            { /* adding valid ip to another string (ip isolation) */
+
+                save_ip += input_string[begin_len]; 
+                begin_len++; // go to next word .
+            }
+            
+
+            if ( ( Is_Char_Exist('\0' ,input_string ,begin_len ,false) == true ) && count_part_digit != 4 )
+            { // like this ---> create mamad:1.2
+
+                Print_Eror("Invalid IP Entered" , "empty");
+                system("pause");
+                complete_bank_accoount = false; // pr acoount was not use .
+                Re_Enter_String(input_string , customer_class); // enter string again .
+            }
+            
+
+            if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
+            {
+                count_ip_dot++; // added one by one .
+                
+                if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
+                {
+                    Print_Eror("IP Should Be 3 Dots" , "Invalid IP Entered");
+                    system("pause");
+                    complete_bank_accoount = false; // pre account was not use .
+                    Re_Enter_String(input_string , customer_class); // enter string again.
+                }
+
+                    
+                if ( Is_Char_Exist('.' , input_string ,begin_len + 1 ,false) == true ) // if we have extra dot in ip
+                { // like this ---> create mamad:..  ---- create mamad:1.2...
+
+                    Print_Eror("We Detect Extra Dots In IP" , "Invalid IP Entered");
+                    system("pause");
+                    complete_bank_accoount = false; // pre account was not use .
+                    Re_Enter_String(input_string , customer_class); // enter string again.
+                }
+
+                save_ip += input_string[begin_len]; // adding dot to ip_string .
+                begin_len++; // go to next word .
+
+            } // end outer of if
+
+        } // end of while 
+
+
+        if ( count_ip_dot >= 4 || count_ip_dot <= 2 ) // if dots invalid we enter this section . like ---> 1.2 or 1.2.3.4.5.6
+        {
+            Print_Eror("Invalid IP Entered" , "empty");
+            system("pause");
+            complete_bank_accoount = false; // pre account was not use .
+            Re_Enter_String(input_string ,customer_class); // enter string again .
+        }
+
+        
+        if ( count_part_digit >= 5 || count_part_digit <= 3 ) // if we have invalid ip like ---> 1.2.3.4.5.6
+        {
+            Print_Eror("A valid IP has 4 sections of numbers" , "empty");
+            system("pause");
+            complete_bank_accoount = false;
+            Re_Enter_String(input_string ,customer_class);
+        }
+}

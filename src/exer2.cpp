@@ -20,7 +20,5 @@ int main()
     Re_Enter_String(input_string , customer_cls);
 
 
-    
-
     return 0 ;
 }
