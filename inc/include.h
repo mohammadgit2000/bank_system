@@ -41,5 +41,9 @@ void Print_Eror(string ,string); // recive two string and print them in format o
 bool Is_Command_Entred(string &  , unsigned short int & ); // if command exist in the entrance string return true else return false .
 bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character of word exist in index of string we return true .
 bool Create_And_Check_Card_Number(user *&);
+bool Is_Repetitive_UserName(user *& , string &);
+bool Is_Repetitive_ip(user *& , string &);
+void Read_User_Name(string &  , unsigned short int &  , user *&  , string & );
+void Read_IP(string &  , unsigned short int &  ,user *&  , string & );
 
 #endif
