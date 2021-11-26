@@ -27,10 +27,12 @@ user :: user() // constructore just create opening and expiration date of accoun
 }
 
 
+
 void user :: set_user_name(string username) // this function set entrance user_name with class variable .
 {
     user_name = username; // store entrance username in the class variable .
 }
+
 
 
 string user :: get_user_name() // return username of customer account .
@@ -39,10 +41,12 @@ string user :: get_user_name() // return username of customer account .
 }
 
 
+
 void user :: set_ip (string ip_string) // set ip that entered in the create time .
 {
     ip_of_account = ip_string; // store entrance of ip in the ip variable of class.
 }
+
 
 
 string user :: get_ip() // return ip of cutomer account .
@@ -51,10 +55,12 @@ string user :: get_ip() // return ip of cutomer account .
 }
 
 
+
 unsigned short int user :: get_opening_year() // return opening yeaer of account .
 {
     return opening_account_year ; // return opening year of account from class .
 }
+
 
 
 unsigned short int user :: get_opening_month() // return opening month of account .
@@ -63,10 +69,12 @@ unsigned short int user :: get_opening_month() // return opening month of accoun
 }
 
 
+
 unsigned short int user :: get_opening_day() // return opening day of account .
 {
     return opening_account_day ; // return opening day of account from class .
 }
+
 
 
 unsigned short int user :: get_expiration_year() // return expiration of account .
@@ -75,13 +83,15 @@ unsigned short int user :: get_expiration_year() // return expiration of account
 }
 
 
-void user:: set_card_number(unsigned int ranmdom_number)
+
+void user:: set_card_number(unsigned int ranmdom_number) // set card number of class variable with parameter .
 {
     card_number = ranmdom_number ;
 }
 
 
-unsigned int user :: get_card_number()
+
+unsigned int user :: get_card_number() // return card number of account.
 {
     return card_number;
 }
@@ -128,10 +138,10 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
             fflush(stdin); // clear buffer .
             getline(cin ,input_string);
             chance--; // decrease chance one by one 
-        }
+        } // end of loop (while)
 
 
-        Check_Exit_Command(input_string);
+        Check_Exit_Command(input_string); // if user enter exit command this function can recognize and exit .
 
         Recognize_Commands(input_string ,customer_class); // at the end of this function we put input string validation .
         
@@ -144,23 +154,25 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
         //         cout << "ip \t" << customer_class[i].get_ip() << endl;
         //         cout << "yeaer month day \t" << customer_class[i].get_opening_year()
         //         << " " << customer_class[i].get_opening_month() << " " << customer_class[i].get_opening_day() << endl;
-        //         cout <<"expiration of account " << customer_class[i].get_expiration_year();
+        //         cout <<"expiration of account " << customer_class[i].get_expiration_year() << endl;
+        //         cout << "Card NUmbver\t" << customer_class[i].get_card_number();
         //     }
         //     break;
         // }   
-    }
-}
+    } // end of loop (while)
+} // end of function (re_enter_string)
 
 
-void Recognize_Commands(string & input_string , user *& customer_class)
+
+void Recognize_Commands(string & input_string , user *& customer_class) // recognize command and execute relavent command .
 {
-    string default_command[] = {"create"};
+    string default_command[] = {"create"}; // contain all of known commands in the app .
 
-    unsigned short int number_of_known_command ;
+    unsigned short int number_of_known_command ; // show us which command to execute .
 
-    if(Is_Command_Entred(input_string ,number_of_known_command) == false)
+    if(Is_Command_Entred(input_string ,number_of_known_command) == false) // check that entrance command exist or not .
     {
-        Re_Enter_String(input_string ,customer_class);
+        Re_Enter_String(input_string ,customer_class); // user must be enter correct command .
     }
 
 
@@ -175,21 +187,19 @@ void Recognize_Commands(string & input_string , user *& customer_class)
 
             Print_Eror("Invalid Entrance Command" , "empty");
             system("pause");
-            // complete_bank_accoount = false; // maen pre account was not use ..
             Re_Enter_String(input_string ,customer_class);
         }
         
         len_default_string++; // go to next word index ..
 
         
-        Read_User_Name(input_string ,len_default_string ,customer_class ,save_username);
+        Read_User_Name(input_string ,len_default_string ,customer_class ,save_username); // read user name from entrance string .
 
 
         if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) // like this create mamad
         {
             Print_Eror("We Can Not Detect IP" , "IP Not Entered");
             system("pause");
-            // complete_bank_accoount = false; // pre account was not use .
             Re_Enter_String(input_string , customer_class); // enter string again .
         }
 
@@ -198,12 +208,419 @@ void Recognize_Commands(string & input_string , user *& customer_class)
     {
         case 0 : // mean user entered "create" command .
 
+        Create_Account(customer_class ,save_username ,input_string ,len_default_string); // create account with entrance information.
+
+        break; // break of switch case 
+    
+    }
+} // end of function (recognize_command) .
+
+
+
+bool Is_Repetitive_UserName(user *& customer_class , string & username , bool valid_user_bl) // Prevents the same name from being added to the bank account
+{
+    if (valid_user_bl == false) // if entrance string invalid we force the user to enter user name again .
+    {
+        return true; // Because we wanted to manage this with a one function . we also consider this repititve .
+    } // To force the user to enter another username
+    
+    for (size_t i = 0; i < global_count ; i++) // check all previous user name .
+    {
+        if (username == customer_class[i].get_user_name())
+        {
+            return true; // mean we found repititve username .
+        }
+    }
+    
+    return false; // mean entrance username was not amoung the previous usernames .
+} // end of function (is_repetitve_username)
+
+
+
+bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_ip_bl) // prevant the same ip and check it .
+{
+    if (valid_ip_bl == false) // mean ip is invalid .
+    {
+        return true; // because we want to manage this . we also consider invalid ip repetitve .
+    }
+    
+    for (size_t i = 0; i < global_count; i++) // check previous ip .
+    {
+        if (ip_string == customer_class[i].get_ip())
+        {
+            return true; // mean that we found repetitve ip .
+        }
+    }
+    
+    return false; // ip was not amoung previus accounts ip .
+} // end of function (is repetitve ip)
+
+
+
+user * Increase_Class(user *& old_class ) // add one class to pre classes and copy pre classes to new class that increased .
+{
+    static bool first_entrance = false; // in the first entrance we enter to first condition .
+
+    if (first_entrance == false) // mean we enter this function at the first time .
+    {
+        first_entrance = true; // true mean that we enter this section at the first time .
+        user * new_class = new user; // create one class .
+        delete old_class;
+        global_count++; // adding to global count . global_coumt was 0 and in this section we will add one to it .
+        /* global count here equal to 1 because we create 1 class */
+        return new_class;
+    }
+
+        else // mean we should be create array of class
+        {
+            user * new_class = new user[global_count + 1]; // Shows how many classes have been created so far
+            /* and we must create global + 1 because we need add one class to pre classes  */
+            
+            for (size_t i = 0; i < global_count ; i++) // copy information of pre classes to new classes (size increased)
+            {
+                new_class[i] = old_class[i]; // copy elements of pre class to new class .
+            }
+            
+            if (global_count == 1)
+            {
+                delete old_class;
+            }
+                else
+                {
+                    delete [] old_class;
+                }
+                
+            global_count++; // we added one class to pre classes and we plus it .
+            return new_class;
+        } // end of else 
+} // end of function (increase array)
+
+
+
+void Print_Eror(string first_string ,string second_string ) // we make the format from first string .
+{ /* take two string and print them in the eror format  */
+    cout << endl;
+
+    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif of format we do this ---> /2
+    {
+        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the fisrt and last of format we put '+' .
+        {
+            cout << "+  ";
+            continue;
+        }
+
+        cout << "-  " ; // we make format with this character ' - '  
+    }
+
+    cout << endl;
+    cout << endl << "      " << first_string << endl; // first eror text writed here .
+
+    if (second_string != "empty") // if we two eror we write here second eror .
+    {
+        cout << "            " << second_string << endl;
+    }
+    
+    cout << endl;
+
+    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif format we do this --> /2
+    {
+        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the first and last of foramt we put ' + ' character .
+        {
+            cout << "+  ";
+            continue;
+        }
+
+        cout << "-  " ; // we make format with this character ' - ' 
+    }
+
+    cout << endl << endl;
+} // end of fuction (print eror)
+
+
+
+bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string) // if we find command return true else false .
+{ /* if command exist in the string return true else return false */
+
+    string default_command[] = {"create"}; // all of command that we can recognize in this program .
+    bool find_command = false; // false means that we can not find default command in the entracne string .
+    int find_out_put; // we store out put of find function in this variable .
+    
+        for (count_default_string = 0; count_default_string < SIZE ; count_default_string++)
+    {
+        find_out_put = input_string.find(default_command[count_default_string]);
+
+        if (find_out_put >= 0) // means that we find command in the string .
+        {
+            find_command = true; // means that we find command .
+            break;
+        }
+    }
+    
+
+    if (input_string.size() == default_command[count_default_string].size()) 
+    { // mean entrance string not complete and just entered known commands . like this example ---> create 
+
+        Print_Eror("You Just Entered Known Command without Information" , "Command Not Complete");
+        system("pause");
+        return false;
+    }
+
+
+    if (find_command == false) // When the command is entered does not match the commands ..
+    {
+        Print_Eror("Command Not Found" , "empty");
+        system("pause");
+        return false;
+    }
+    
+
+    if (find_command == true) // mean command find in the entrance string ...
+    {
+        if (find_out_put != 0) //that mean command was not entered at the first of string ..
+        { /* maybe like this example ---> abcd create mamad:1.2.3.4 */
+
+            Print_Eror("Command Must Be In The First Of String" , "empty");
+            system("pause");
+            return false;
+        }
+    }
+
+    return true;
+} // end of functoin (is command entered)
+
+
+
+bool Is_Char_Exist(char word, string & input_string ,unsigned short int index , bool is_number) // compare entrance word with one of string index
+{
+    if (is_number) // if is_number is true we enter this section for number checker.
+    {
+        if ( isdigit( input_string[index] ) ) // We cannot put a number at the beginning of the name
+        {
+            return true ; // means that there is number in the index of string .
+        }
+
+        return false; // means that there is not number in the index of string .
+    }
+        else // if is_number is false we enter this section for character checker .
+        {
+            if (input_string[index] == word) 
+            {
+                return true; // mean that there is given character in the index of string .
+            }
+
+            return false; // means that there is not character in the index of string .
+        }
+} // end of fuction (is char exist)
+
+
+
+void Create_And_Check_Card_Number(user *& customer_class) // create random card number between 1 and 9999 . 
+{
+    srand(time(nullptr));
+    static bool first_entrance = false; // at the first time we can not compare with previous card numbers .
+    unsigned int random_card_number = rand() % 9999 + 1 ; // create random number .
+
+    if (first_entrance == false) // at the first time .
+    {
+        first_entrance = true;
+        customer_class[global_count - 1].set_card_number(random_card_number);
+        return;
+    }
+
+    bool repetitive_number_exist = false; // false mean : we was not same card number .
+    
+    while (true)
+    {
+        for (size_t i = 0; i < global_count - 1 ; i++) // check all of card numbers .
+        {
+            if (customer_class[i].get_card_number() == random_card_number)
+            {
+                repetitive_number_exist = true ; // mean we found same card number .
+                break;
+            }
+        }
+
+        if (repetitive_number_exist == true) // that`s mean we have repetitve card number and we must create another one .
+        {
+            random_card_number = rand() % 9999 + 1 ; // create again .
+        }
+            else // that`s mean the constructed number is not repetitive .
+            {
+                customer_class[global_count - 1].set_card_number(random_card_number); 
+                return ;
+            }
+    } // end of loop (for)
+} // end of function (create and check card number)
+
+
+
+void Read_User_Name(string & input_string , unsigned short int & begin_len , user *& customer_class , string & save_username)
+{ /* read user name from input string  */
+    while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
+    {
+        save_username += input_string[begin_len]; // Isolation of usernames
+        begin_len++; // go to next word .
+    }
+} // end of read user name .
+
+
+
+void Read_IP(string & input_string , unsigned short int & begin_len ,user *& customer_class , string & save_ip)
+{ /* read ip from input string  */
+    while (input_string[begin_len] != '\0') // read ip until reaches to end .
+    {
+        while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
+        { /* adding valid ip to another string (ip isolation) */
+
+            save_ip += input_string[begin_len]; // added ip to save_ip variable .
+            begin_len++; // go to next word .
+        }
+
+
+        if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
+        {
+                save_ip += input_string[begin_len]; // adding dot to save_ip variable  .
+                begin_len++; // go to next word .
+
+        } // end outer of if
+
+    } // end of loop (while )
+} // end of function (read ip)
+
+
+
+bool Is_Valid_UserName(string & username ) // user name validation 
+{
+        if ( isdigit( username[0] ) ) 
+        {// first character of username can not begin with number like this --> create 1mamad
+
+            return false ; // mean that entrance username is not valid .
+        }
+
+        for (size_t i = 0; i < username.size() ; i++)
+        {
+            if (ispunct(username[i]))
+            {
+                return false; // mean that etrance userame is not valid 
+            }
+        }
+
+        return true;
+} // end of function (is valid username)
+
+
+
+bool Is_Valid_IP(string & ip_string) // ip validation 
+{
+    unsigned short int count_ip_dot = 0; // calculate dots in the ip .
+    unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
+    /* valid ip have 4 part of number like --->  123.25.147.59 */
+
+    for (size_t i = 0; i < ip_string.size() ;   )
+    {
+        int convert_number = stoi(&ip_string[i]); // convert string to number .
+        count_part_digit++; 
+
+        if (convert_number >= 256) // mean entrance ip is not valid .
+        {
+            return false;
+        }
+
+
+        while (ip_string[i] != '.' && ip_string[i] != '\0') // we dont want convert dot . so that we cross it .
+        {
+            i++; // go to next word .
+        }
+
+
+        if ( ( Is_Char_Exist('\0' ,ip_string ,i ,false) == true ) && count_part_digit != 4 )
+        { // like this ---> create mamad:1.2
+            return false;
+        }
+
+
+        if (ip_string[i] == '.') // dot counter . dot should be 3 .
+        {
+            count_ip_dot++; // added one by one .
+                
+            if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
+            {
+                return false;
+            }
+
+                
+            if ( Is_Char_Exist('.' , ip_string ,i + 1 ,false) == true ) // if we have extra dot in ip
+            { // like this ---> create mamad:..  ---- create mamad:1.2...
+                return false;
+            }
+
+            i++; // go to next word .
+
+        } // end outer of if
+
+    } // end of loop (for)
+
+        if ( count_ip_dot >= 4 || count_ip_dot <= 2 ) // if dots invalid we enter this section . like ---> 1.2 or 1.2.3.4.5.6
+        {
+            return false;
+        }
+
+        
+        if ( count_part_digit >= 5 || count_part_digit <= 3 ) // if we have invalid ip like ---> 1.2.3.4.5.6
+        {
+            return false;
+        }
+
+    return true;
+} // end of function (is valid ip)
+
+
+
+void Check_Exit_Command(string & input_string) // check if entrance string had an exit command . execute exit .
+{
+    if (input_string == "0") // one of exit command 
+    {
+        system("cls");
+        
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
+        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        exit(EXIT_SUCCESS); // exit .
+    }
+
+    for (size_t i = 0; i < input_string.size() ; i++) // cast all of string to lower case .
+    {
+        input_string[i] = tolower(input_string[i]);
+    }
+    
+    
+    if (input_string == "exit")
+    { // When the exit order was entered we close the program .
+        system("cls");
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
+        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        exit(EXIT_SUCCESS); // exit .
+    }
+} // end of function (check exit command )
+
+
+
+void Create_Account(user *& customer_class ,string & save_username ,string & input_string ,unsigned short int & len_default_string)
+{ /* create account with entrance inforamtion and validation of information. */
+
         string save_ip; // add user`s ip to this variable .
-        bool valid_username_bl = true;
-        bool valid_ip_bl = true;
+        bool valid_username_bl = true; // true mean : entrance username is valid .
+        bool valid_ip_bl = true; // true mean : entrance ip is valid .
 
 
-        if ( Is_Valid_UserName(save_username) == false )
+        if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
         {
             Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
                        "Punctuation Character Should Not Be Used");
@@ -213,7 +630,7 @@ void Recognize_Commands(string & input_string , user *& customer_class)
         }
         
 
-        if (end_account_range == true)
+        if (end_account_range == true) // We have restrictions for creating an account
         {
             if (chance_for_end_range == 0)
             {
@@ -256,11 +673,10 @@ void Recognize_Commands(string & input_string , user *& customer_class)
         }
 
 
-        Read_IP(input_string ,len_default_string ,customer_class ,save_ip);
+        Read_IP(input_string ,len_default_string ,customer_class ,save_ip); // read ip from input string .
         
-        cout << "IP ---->\t" << save_ip << endl;
 
-        if( Is_Valid_IP(save_ip) == false)
+        if( Is_Valid_IP(save_ip) == false) // ip validation .
         {
             Print_Eror("Your Entrance IP Is Not Valid" , "empty");
             system("pause");
@@ -269,7 +685,7 @@ void Recognize_Commands(string & input_string , user *& customer_class)
         }
 
 
-        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) )
+        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
         {
             Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
             cout << "Just Enter User Name Without Any Command Or Words" << endl;
@@ -278,16 +694,16 @@ void Recognize_Commands(string & input_string , user *& customer_class)
             fflush(stdin);
             getline(cin ,save_username);
 
-            Check_Exit_Command(save_username);
+            Check_Exit_Command(save_username); // if exit command entered we execute it .
 
-            if ( save_username[save_username.size() - 1] == ' ')
+            if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
             {
                 Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
                 valid_username_bl = false;
                 continue;
             }
 
-            if ( Is_Valid_UserName(save_username) == false )
+            if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
             {
                 Print_Eror("Your Entrance User Name Not Valid" , "empty");
                 system("pause");
@@ -299,7 +715,7 @@ void Recognize_Commands(string & input_string , user *& customer_class)
         }
 
         
-        while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) )
+        while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) ) // prevent same ip .
         {
             Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
             cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
@@ -307,9 +723,9 @@ void Recognize_Commands(string & input_string , user *& customer_class)
             fflush(stdin);
             getline(cin ,save_ip);
 
-            Check_Exit_Command(save_ip);
+            Check_Exit_Command(save_ip); // if exit command entered we execute it .
 
-            if ( Is_Valid_IP(save_ip) == false )
+            if ( Is_Valid_IP(save_ip) == false ) // pi validation .
             {
                 Print_Eror("Your Entrance IP Is Not Valid" , "empty");
                 system("pause");
@@ -320,399 +736,12 @@ void Recognize_Commands(string & input_string , user *& customer_class)
             valid_ip_bl = true;
         }
         
+
         customer_class[global_count - 1 ].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
 
-        // if (global_count == 3)
-        // {
-        //     cout << endl << "************************************************" << endl;
-        //     cout << "global count \t" << global_count << endl;
-        //     cout << "user name \t" << customer_class[global_count - 1].get_user_name() << endl;
-        //     cout << "ip \t" << customer_class[global_count - 1].get_ip() << endl;
-        //     cout << "yeaer month day \t" << customer_class[global_count - 1].get_opening_year()
-        //     << " " << customer_class[global_count - 1].get_opening_month() << " " << customer_class[global_count - 1].get_opening_day() << endl;
-        //     cout <<"expiration of account " << customer_class[global_count - 1].get_expiration_year();
-        // }
+        Create_And_Check_Card_Number(customer_class); // create random card number (unique).
 
         complete_bank_accoount = true; // that`s mean we used the created account .and now we can add account for next user .
 
-        break; // break of switch case 
-    
-    }
-}
-
-
-bool Is_Repetitive_UserName(user *& customer_class , string & username , bool valid_user_bl) // Prevents the same name from being added to the bank account
-{
-    if (valid_user_bl == false)
-    {
-        return true;
-    }
-    
-    for (size_t i = 0; i < global_count ; i++)
-    {
-        if (username == customer_class[i].get_user_name())
-        {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-
-bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_ip_bl)
-{
-    if (valid_ip_bl == false)
-    {
-        return true;
-    }
-    
-    for (size_t i = 0; i < global_count; i++)
-    {
-        if (ip_string == customer_class[i].get_ip())
-        {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-
-user * Increase_Class(user *& old_class ) // add one class to pre classes and copy pre classes to new class that increased .
-{
-    static bool first_entrance = false; // in the first entrance we enter to first condition .
-
-    if (first_entrance == false) // mean we enter this function at the first time .
-    {
-        first_entrance = true; // true mean that we enter this section at the first time .
-        user * new_class = new user; // create one class .
-        delete old_class;
-        global_count++; // adding to global count . global_coumt was 0 and in this section we will add one to it .
-        /* global count here equal to 1 because we create 1 class */
-        return new_class;
-    }
-        else // mean we should be create array of class
-        {
-            user * new_class = new user[global_count + 1]; // Shows how many classes have been created so far
-            /* and we must create global + 1 because we need add one class to pre classes  */
-            
-            for (size_t i = 0; i < global_count ; i++) // copy information of pre classes to new classes (size increased)
-            {
-                new_class[i] = old_class[i]; // copy elements of pre class to new class .
-            }
-            
-            if (global_count == 1)
-            {
-                delete old_class;
-            }
-                else
-                {
-                    delete [] old_class;
-                }
-                
-            global_count++; // we added one class to pre classes and we plus it .
-            return new_class;
-        }
-}
-
-
-
-void Print_Eror(string first_string ,string second_string ) // we make the format from first string .
-{ /* take two string and print them in the eror format  */
-    cout << endl;
-
-    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif of format we do this ---> /2
-    {
-        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the fisrt and last of format we put '+' .
-        {
-            cout << "+  ";
-            continue;
-        }
-
-        cout << "-  " ; // we make format with this character ' - '  
-    }
-
-    cout << endl;
-    cout << endl << "      " << first_string << endl; // first eror text writed here .
-
-    if (second_string != "empty") // if we two eror we write here second eror .
-    {
-        cout << "            " << second_string << endl;
-    }
-    
-    cout << endl;
-
-    for (size_t i = 0; i < first_string.size() / 2 ; i++) // to be breif format we do this --> /2
-    {
-        if (i == 0 || i == (first_string.size() / 2 ) - 1 ) // in the first and last of foramt we put ' + ' character .
-        {
-            cout << "+  ";
-            continue;
-        }
-
-        cout << "-  " ; // we make format with this character ' - ' 
-    }
-
-    cout << endl << endl;
-}
-
-
-bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string) // if we find command return true else false .
-{ /* if command exist in the string return true else return false */
-
-    string default_command[] = {"create"}; // all of command that we can recognize in this program .
-    bool find_command = false; // false means that we can not find default command in the entracne string .
-    int find_out_put; // we store out put of find function in this variable .
-    
-        for (count_default_string = 0; count_default_string < SIZE ; count_default_string++)
-    {
-        find_out_put = input_string.find(default_command[count_default_string]);
-
-        if (find_out_put >= 0) // means that we find command in the string .
-        {
-            find_command = true; // means that we find command .
-            break;
-        }
-    }
-    
-    if (input_string.size() == default_command[count_default_string].size()) 
-    { // mean entrance string not complete and just entered known commands . like this example ---> create 
-
-        Print_Eror("You Just Entered Known Command without Information" , "Command Not Complete");
-        system("pause");
-        return false;
-    }
-
-    if (find_command == false) // When the command is entered does not match the commands ..
-    {
-        Print_Eror("Command Not Found" , "empty");
-        system("pause");
-        return false;
-    }
-    
-    if (find_command == true) // mean command find in the entrance string ...
-    {
-        if (find_out_put != 0) //that mean command was not entered at the first of string ..
-        { /* maybe like this example ---> abcd create mamad:1.2.3.4 */
-
-            Print_Eror("Command Must Be In The First Of String" , "empty");
-            system("pause");
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-
-bool Is_Char_Exist(char word, string & input_string ,unsigned short int index , bool is_number) // compare entrance word with one of string index
-{
-    if (is_number) // if is_number is true we enter this section for number checker.
-    {
-        if ( isdigit( input_string[index] ) ) // We cannot put a number at the beginning of the name
-        {
-            return true ; // means that there is number in the index of string .
-        }
-
-        return false; // means that there is not number in the index of string .
-    }
-        else // if is_number is false we enter this section for character checker .
-        {
-            if (input_string[index] == word) 
-            {
-                return true; // mean that there is given character in the index of string .
-            }
-
-            return false; // means that there is not character in the index of string .
-        }
-}
-
-
-// bool Create_And_Check_Card_Number(user *& customer_class)
-// {
-//     srand(time(nullptr));
-
-//     unsigned int random_card_number = rand() % 9999 + 1 ;
-
-//     bool repetitive_number_exist = false;
-    
-//     while (true)
-//     {
-//         for (size_t i = 0; i < global_count; i++) // check all of card numbers .
-//         {
-//             if (customer_class[i].get_card_number() == random_card_number)
-//             {
-//                 repetitive_number_exist = true ;
-//                 break;
-//             }
-//         }
-
-//         if (repetitive_number_exist == true) // that`s mean we have repetitve card number and we must create another one .
-//         {
-//             random_card_number = rand() % 9999 + 1 ;
-//         }
-//             else // that`s mean the constructed number is not repetitive .
-//             {
-//                 break;
-//             }
-            
-//     }
-// }
-
-
-void Read_User_Name(string & input_string , unsigned short int & begin_len , user *& customer_class , string & save_username)
-{
-    while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
-    {
-        save_username += input_string[begin_len]; // Isolation of usernames
-        begin_len++; // go to next word .
-    }
-}
-
-
-
-void Read_IP(string & input_string , unsigned short int & begin_len ,user *& customer_class , string & save_ip)
-{
-    while (input_string[begin_len] != '\0') // read ip until reaches to end .
-    {
-        while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
-        { /* adding valid ip to another string (ip isolation) */
-
-            save_ip += input_string[begin_len]; 
-            begin_len++; // go to next word .
-        }
-
-
-        if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
-        {
-                save_ip += input_string[begin_len]; // adding dot to ip_string .
-                begin_len++; // go to next word .
-
-        } // end outer of if
-
-    } // end of while 
-}
-
-
-bool Is_Valid_UserName(string & username )
-{
-        if ( isdigit( username[0] ) ) 
-        {// first character of username can not begin with number like this --> create 1mamad
-
-            return false ;
-        }
-
-        for (size_t i = 0; i < username.size() ; i++)
-        {
-            if (ispunct(username[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-}
-
-
-bool Is_Valid_IP(string & ip_string)
-{
-    unsigned short int count_ip_dot = 0; // calculate dots in the ip .
-    unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
-    /* valid ip have 4 part of number like --->  123.25.147.59 */
-
-    for (size_t i = 0; i < ip_string.size() ;   )
-    {
-        int convert_number = stoi(&ip_string[i]);
-        count_part_digit++;
-
-        if (convert_number >= 256)
-        {
-            return false;
-        }
-
-
-        while (ip_string[i] != '.' && ip_string[i] != '\0') 
-        {
-            i++; // go to next word .
-        }
-
-
-        if ( ( Is_Char_Exist('\0' ,ip_string ,i ,false) == true ) && count_part_digit != 4 )
-        { // like this ---> create mamad:1.2
-            cout << "HERE" << endl;
-            return false;
-        }
-
-
-        if (ip_string[i] == '.') // dot counter . dot should be 3 .
-        {
-            count_ip_dot++; // added one by one .
-                
-            if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
-            {
-                return false;
-            }
-
-                
-            if ( Is_Char_Exist('.' , ip_string ,i + 1 ,false) == true ) // if we have extra dot in ip
-            { // like this ---> create mamad:..  ---- create mamad:1.2...
-                return false;
-            }
-
-            i++; // go to next word .
-
-        } // end outer of if
-
-    } // end of loop (for)
-
-        if ( count_ip_dot >= 4 || count_ip_dot <= 2 ) // if dots invalid we enter this section . like ---> 1.2 or 1.2.3.4.5.6
-        {
-            return false;
-        }
-
-        
-        if ( count_part_digit >= 5 || count_part_digit <= 3 ) // if we have invalid ip like ---> 1.2.3.4.5.6
-        {
-            return false;
-        }
-
-    return true;
-}
-
-
-void Check_Exit_Command(string & input_string)
-{
-    if (input_string == "0")
-    {
-        system("cls");
-        
-        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
-        cout << "|                                                                           |" << endl;
-        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
-        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
-        cout << "|                                                                           |" << endl;
-        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
-        exit(EXIT_SUCCESS); // exit .
-    }
-
-    for (size_t i = 0; i < input_string.size() ; i++)
-    {
-        input_string[i] = tolower(input_string[i]);
-    }
-    
-    
-    if (input_string == "exit")
-    { // When the exit order was entered we close the program .
-        system("cls");
-        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
-        cout << "|                                                                           |" << endl;
-        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
-        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
-        cout << "|                                                                           |" << endl;
-        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
-        exit(EXIT_SUCCESS); // exit .
-    }
-}
+} // end of function (create accout)
