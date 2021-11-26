@@ -2,6 +2,7 @@
 #include<iostream>
 #include<cctype>
 #include<ctime>
+#include<string>
 
 #define SIZE 1
 
@@ -129,18 +130,12 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
             chance--; // decrease chance one by one 
         }
 
-        
-        if (input_string == "Exit" || input_string == "exit" || input_string == "EXIT" || input_string == "0")
-        { // When the exit order was entered we close the program .
-            system("cls");
-            cout << "!#!   You Entered Exit Command In The First Of Program   !#!" << endl;
-            cout << "\t!#!   End Of Program   !#!" << endl;
-            exit(EXIT_SUCCESS); // exit .
-        }
 
-        Check_User_Name(input_string ,customer_class); // at the end of this function we put input string validation .
+        Check_Exit_Command(input_string);
+
+        Recognize_Commands(input_string ,customer_class); // at the end of this function we put input string validation .
         
-        // if (global_count == 3)
+        // if (global_count == 2)
         // {
         //     for (size_t i = 0; i < global_count ; i++)
         //     {
@@ -151,13 +146,13 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
         //         << " " << customer_class[i].get_opening_month() << " " << customer_class[i].get_opening_day() << endl;
         //         cout <<"expiration of account " << customer_class[i].get_expiration_year();
         //     }
+        //     break;
         // }   
-
     }
 }
 
 
-void Check_User_Name(string & input_string , user *& customer_class)
+void Recognize_Commands(string & input_string , user *& customer_class)
 {
     string default_command[] = {"create"};
 
@@ -169,9 +164,8 @@ void Check_User_Name(string & input_string , user *& customer_class)
     }
 
 
+    unsigned short int len_default_string; // store length of known command like "create" command .
     string save_username; // add username to this variable .
-    string save_ip; // add user`s ip to this variable .
-    unsigned short int len_default_string; // calculate length of known command like "create" command .
 
 
         len_default_string = default_command[number_of_known_command].size(); // calculate length of "create" command .
@@ -186,15 +180,6 @@ void Check_User_Name(string & input_string , user *& customer_class)
         }
         
         len_default_string++; // go to next word index ..
-        
-        if ( Is_Char_Exist(' ' , input_string ,len_default_string ,true) == true ) 
-        {// first character of username can not begin with number like this --> create 1mamad
-
-            Print_Eror("Invalid User Name . User Name Can not Begin With Number" , "empty");
-            // complete_bank_accoount = false; // mean pre account was not use ...
-            system("pause");
-            Re_Enter_String(input_string ,customer_class);
-        }
 
         
         Read_User_Name(input_string ,len_default_string ,customer_class ,save_username);
@@ -212,7 +197,22 @@ void Check_User_Name(string & input_string , user *& customer_class)
     switch (number_of_known_command) // Each command has its own text
     {
         case 0 : // mean user entered "create" command .
+
+        string save_ip; // add user`s ip to this variable .
+        bool valid_username_bl = true;
+        bool valid_ip_bl = true;
+
+
+        if ( Is_Valid_UserName(save_username) == false )
+        {
+            Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
+                       "Punctuation Character Should Not Be Used");
+            // complete_bank_accoount = false; // mean pre account was not use ...
+            system("pause");
+            Re_Enter_String(input_string ,customer_class);
+        }
         
+
         if (end_account_range == true)
         {
             if (chance_for_end_range == 0)
@@ -226,13 +226,6 @@ void Check_User_Name(string & input_string , user *& customer_class)
             Re_Enter_String(input_string , customer_class);
         }
         
-        if (Is_Repetitive_UserName(customer_class ,save_username))
-        {
-            Print_Eror("You Can Not Enter Same Name Like Pre Bank Accounts" , "empty");
-            system("pause");
-            Re_Enter_String(input_string , customer_class);
-        }
-        
 
         if (complete_bank_accoount == true) 
         { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
@@ -240,6 +233,7 @@ void Check_User_Name(string & input_string , user *& customer_class)
             customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
             
         } // end of outer if
+
 
         len_default_string++; // go to next word .
 
@@ -261,16 +255,69 @@ void Check_User_Name(string & input_string , user *& customer_class)
             Re_Enter_String(input_string ,customer_class); // enter steirg again .
         }
 
-        
+
         Read_IP(input_string ,len_default_string ,customer_class ,save_ip);
         
+        cout << "IP ---->\t" << save_ip << endl;
+
+        if( Is_Valid_IP(save_ip) == false)
+        {
+            Print_Eror("Your Entrance IP Is Not Valid" , "empty");
+            system("pause");
+            complete_bank_accoount = false;
+            Re_Enter_String(input_string ,customer_class);
+        }
+
+
+        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) )
+        {
+            Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
+            cout << "Just Enter User Name Without Any Command Or Words" << endl;
+            cout << "Liek This Exaple --->  Alex " << endl;
+            cout << "Enter User Name Under This Line :)" << endl;
+            fflush(stdin);
+            getline(cin ,save_username);
+
+            Check_Exit_Command(save_username);
+
+            if ( save_username[save_username.size() - 1] == ' ')
+            {
+                Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
+                valid_username_bl = false;
+                continue;
+            }
+
+            if ( Is_Valid_UserName(save_username) == false )
+            {
+                Print_Eror("Your Entrance User Name Not Valid" , "empty");
+                system("pause");
+                valid_username_bl = false;
+                continue;
+            }
+
+            valid_username_bl = true;
+        }
+
         
-        while ( Is_Repetitive_ip(customer_class , save_ip) )
+        while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) )
         {
             Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
             cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
             cout << "Like This Example ---> 1.2.3.4" << endl;
-            Read_IP(input_string ,len_default_string ,customer_class ,save_ip);
+            fflush(stdin);
+            getline(cin ,save_ip);
+
+            Check_Exit_Command(save_ip);
+
+            if ( Is_Valid_IP(save_ip) == false )
+            {
+                Print_Eror("Your Entrance IP Is Not Valid" , "empty");
+                system("pause");
+                valid_ip_bl = false;
+                continue;
+            }
+
+            valid_ip_bl = true;
         }
         
         customer_class[global_count - 1 ].set_user_name(save_username); // global_count Indicates how many classes are made .
@@ -295,8 +342,13 @@ void Check_User_Name(string & input_string , user *& customer_class)
 }
 
 
-bool Is_Repetitive_UserName(user *& customer_class , string & username) // Prevents the same name from being added to the bank account
+bool Is_Repetitive_UserName(user *& customer_class , string & username , bool valid_user_bl) // Prevents the same name from being added to the bank account
 {
+    if (valid_user_bl == false)
+    {
+        return true;
+    }
+    
     for (size_t i = 0; i < global_count ; i++)
     {
         if (username == customer_class[i].get_user_name())
@@ -309,8 +361,13 @@ bool Is_Repetitive_UserName(user *& customer_class , string & username) // Preve
 }
 
 
-bool Is_Repetitive_ip(user *& customer_class , string & ip_string)
+bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_ip_bl)
 {
+    if (valid_ip_bl == false)
+    {
+        return true;
+    }
+    
     for (size_t i = 0; i < global_count; i++)
     {
         if (ip_string == customer_class[i].get_ip())
@@ -510,14 +567,6 @@ void Read_User_Name(string & input_string , unsigned short int & begin_len , use
 {
     while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
     {
-        if (ispunct(input_string[begin_len]))
-        {
-            Print_Eror("Can Not Enter Punctuation Character" , "empty");
-            system("pause");
-            // complete_bank_accoount = false; // pre account was not use .
-            Re_Enter_String(input_string , customer_class); // enter string again .
-        }
-            
         save_username += input_string[begin_len]; // Isolation of usernames
         begin_len++; // go to next word .
     }
@@ -527,86 +576,143 @@ void Read_User_Name(string & input_string , unsigned short int & begin_len , use
 
 void Read_IP(string & input_string , unsigned short int & begin_len ,user *& customer_class , string & save_ip)
 {
+    while (input_string[begin_len] != '\0') // read ip until reaches to end .
+    {
+        while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
+        { /* adding valid ip to another string (ip isolation) */
+
+            save_ip += input_string[begin_len]; 
+            begin_len++; // go to next word .
+        }
+
+
+        if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
+        {
+                save_ip += input_string[begin_len]; // adding dot to ip_string .
+                begin_len++; // go to next word .
+
+        } // end outer of if
+
+    } // end of while 
+}
+
+
+bool Is_Valid_UserName(string & username )
+{
+        if ( isdigit( username[0] ) ) 
+        {// first character of username can not begin with number like this --> create 1mamad
+
+            return false ;
+        }
+
+        for (size_t i = 0; i < username.size() ; i++)
+        {
+            if (ispunct(username[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+}
+
+
+bool Is_Valid_IP(string & ip_string)
+{
     unsigned short int count_ip_dot = 0; // calculate dots in the ip .
     unsigned short int count_part_digit = 0; // calculate part of digits because we must have 4 part number .
     /* valid ip have 4 part of number like --->  123.25.147.59 */
 
-        while (input_string[begin_len] != '\0') // read ip until reaches to end .
+    for (size_t i = 0; i < ip_string.size() ;   )
+    {
+        int convert_number = stoi(&ip_string[i]);
+        count_part_digit++;
+
+        if (convert_number >= 256)
         {
-            int convert_number = stoi(&input_string[begin_len]); // convert stirng to int for check valid ip .
-            count_part_digit++;
-
-            if (convert_number >= 256)
-            {
-                Print_Eror("IP should be between 0 and 255" , "Invalid IP Entered");
-                system("pause");
-                complete_bank_accoount = false; // pre account was not use .
-                Re_Enter_String(input_string ,customer_class); // string must be enter again .
-            }
+            return false;
+        }
 
 
-            while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
-            { /* adding valid ip to another string (ip isolation) */
+        while (ip_string[i] != '.' && ip_string[i] != '\0') 
+        {
+            i++; // go to next word .
+        }
 
-                save_ip += input_string[begin_len]; 
-                begin_len++; // go to next word .
-            }
-            
 
-            if ( ( Is_Char_Exist('\0' ,input_string ,begin_len ,false) == true ) && count_part_digit != 4 )
-            { // like this ---> create mamad:1.2
+        if ( ( Is_Char_Exist('\0' ,ip_string ,i ,false) == true ) && count_part_digit != 4 )
+        { // like this ---> create mamad:1.2
+            cout << "HERE" << endl;
+            return false;
+        }
 
-                Print_Eror("Invalid IP Entered" , "empty");
-                system("pause");
-                complete_bank_accoount = false; // pr acoount was not use .
-                Re_Enter_String(input_string , customer_class); // enter string again .
-            }
-            
 
-            if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
-            {
-                count_ip_dot++; // added one by one .
+        if (ip_string[i] == '.') // dot counter . dot should be 3 .
+        {
+            count_ip_dot++; // added one by one .
                 
-                if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
-                {
-                    Print_Eror("IP Should Be 3 Dots" , "Invalid IP Entered");
-                    system("pause");
-                    complete_bank_accoount = false; // pre account was not use .
-                    Re_Enter_String(input_string , customer_class); // enter string again.
-                }
+            if (count_ip_dot >= 4) // valid ip have 3 dot ---> 1.2.3.4
+            {
+                return false;
+            }
 
-                    
-                if ( Is_Char_Exist('.' , input_string ,begin_len + 1 ,false) == true ) // if we have extra dot in ip
-                { // like this ---> create mamad:..  ---- create mamad:1.2...
+                
+            if ( Is_Char_Exist('.' , ip_string ,i + 1 ,false) == true ) // if we have extra dot in ip
+            { // like this ---> create mamad:..  ---- create mamad:1.2...
+                return false;
+            }
 
-                    Print_Eror("We Detect Extra Dots In IP" , "Invalid IP Entered");
-                    system("pause");
-                    complete_bank_accoount = false; // pre account was not use .
-                    Re_Enter_String(input_string , customer_class); // enter string again.
-                }
+            i++; // go to next word .
 
-                save_ip += input_string[begin_len]; // adding dot to ip_string .
-                begin_len++; // go to next word .
+        } // end outer of if
 
-            } // end outer of if
-
-        } // end of while 
-
+    } // end of loop (for)
 
         if ( count_ip_dot >= 4 || count_ip_dot <= 2 ) // if dots invalid we enter this section . like ---> 1.2 or 1.2.3.4.5.6
         {
-            Print_Eror("Invalid IP Entered" , "empty");
-            system("pause");
-            complete_bank_accoount = false; // pre account was not use .
-            Re_Enter_String(input_string ,customer_class); // enter string again .
+            return false;
         }
 
         
         if ( count_part_digit >= 5 || count_part_digit <= 3 ) // if we have invalid ip like ---> 1.2.3.4.5.6
         {
-            Print_Eror("A valid IP has 4 sections of numbers" , "empty");
-            system("pause");
-            complete_bank_accoount = false;
-            Re_Enter_String(input_string ,customer_class);
+            return false;
         }
+
+    return true;
+}
+
+
+void Check_Exit_Command(string & input_string)
+{
+    if (input_string == "0")
+    {
+        system("cls");
+        
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
+        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        exit(EXIT_SUCCESS); // exit .
+    }
+
+    for (size_t i = 0; i < input_string.size() ; i++)
+    {
+        input_string[i] = tolower(input_string[i]);
+    }
+    
+    
+    if (input_string == "exit")
+    { // When the exit order was entered we close the program .
+        system("cls");
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "     !#!   You Entered Exit Command And We Have To Close The Program   !#!" << endl;
+        cout << "\t\t\t!#!   End Of Program   !#!" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "+      =       =        =        =        =        =        =        =      +" << endl;
+        exit(EXIT_SUCCESS); // exit .
+    }
 }
