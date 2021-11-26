@@ -35,15 +35,18 @@ class user
 
 
 void Re_Enter_String(string & ,user *&); // if entreance information was wrong we call this function again .
-void Check_User_Name(string & ,user *&); // username and ip validation .
+void Recognize_Commands(string & ,user *&); // username and ip validation .
 user * Increase_Class(user *&); // increase size of class array and copy pre class`s information in new class array that increased .
 void Print_Eror(string ,string); // recive two string and print them in format of eror .
 bool Is_Command_Entred(string &  , unsigned short int & ); // if command exist in the entrance string return true else return false .
 bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character of word exist in index of string we return true .
 bool Create_And_Check_Card_Number(user *&);
-bool Is_Repetitive_UserName(user *& , string &);
-bool Is_Repetitive_ip(user *& , string &);
+bool Is_Repetitive_UserName(user *& , string & , bool);
+bool Is_Repetitive_ip(user *& , string & , bool);
 void Read_User_Name(string &  , unsigned short int &  , user *&  , string & );
 void Read_IP(string &  , unsigned short int &  ,user *&  , string & );
+bool Is_Valid_UserName(string &);
+bool Is_Valid_IP(string &);
+void Check_Exit_Command(string &);
 
 #endif
