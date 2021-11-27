@@ -191,10 +191,63 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         }
         
         len_default_string++; // go to next word index ..
+        static bool first_entrance = false;
+        bool valid_username_bl = true; // true mean : entrance username is valid .
 
+
+        Read_User_Name(input_string ,len_default_string ,save_username); // read user name from entrance string .
         
-        Read_User_Name(input_string ,len_default_string ,customer_class ,save_username); // read user name from entrance string .
 
+        if (true == first_entrance)
+        {
+            if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
+            {
+                Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
+                        "Punctuation Character Should Not Be Used");
+                system("pause");
+                Re_Enter_String(input_string ,customer_class);
+            }
+
+                while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
+                {
+                    Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
+                    cout << "Just Enter User Name Without Any Command Or Words" << endl;
+                    cout << "Liek This Exaple --->  Alex " << endl;
+                    cout << "Enter User Name Under This Line :)" << endl;
+                    fflush(stdin);
+                    getline(cin ,save_username);
+
+                    Check_Exit_Command(save_username); // if exit command entered we execute it .
+
+
+                    if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
+                    {
+                        Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
+                        valid_username_bl = false; // mean that entrance string not valid .
+                        continue;
+                    }
+
+
+                    if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
+                    {
+                        Print_Eror("Your Entrance User Name Not Valid" , "empty");
+                        system("pause");
+                        valid_username_bl = false; // mean that entrance string not valid 
+                        continue;
+                    }
+
+                    valid_username_bl = true; // if entrance username in this section is coorect we set true this variable .
+
+                } // end of loop (while)
+
+        } // end of if (true == first_entrance)
+        
+
+        if (first_entrance == false) // at the first time we just have one name and we can not compare it with previous .
+        {
+            first_entrance = true;
+        }
+        
 
         if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) // like this create mamad
         {
@@ -211,7 +264,12 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         Create_Account(customer_class ,save_username ,input_string ,len_default_string); // create account with entrance information.
 
         break; // break of switch case 
-    
+
+        case 1 : // mean user entered "Add_ip" command .
+
+
+
+        break;
     }
 } // end of function (recognize_command) .
 
@@ -454,8 +512,9 @@ void Create_And_Check_Card_Number(user *& customer_class) // create random card 
 
 
 
-void Read_User_Name(string & input_string , unsigned short int & begin_len , user *& customer_class , string & save_username)
+void Read_User_Name(string & input_string , unsigned short int & begin_len , string & save_username)
 { /* read user name from input string  */
+
     while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
     {
         save_username += input_string[begin_len]; // Isolation of usernames
@@ -465,26 +524,16 @@ void Read_User_Name(string & input_string , unsigned short int & begin_len , use
 
 
 
-void Read_IP(string & input_string , unsigned short int & begin_len ,user *& customer_class , string & save_ip)
+void Read_IP(string & input_string , unsigned short int & begin_len , string & save_ip)
 { /* read ip from input string  */
-    while (input_string[begin_len] != '\0') // read ip until reaches to end .
-    {
-        while (input_string[begin_len] != '.' && input_string[begin_len] != '\0') 
-        { /* adding valid ip to another string (ip isolation) */
 
-            save_ip += input_string[begin_len]; // added ip to save_ip variable .
-            begin_len++; // go to next word .
-        }
+    while (input_string[begin_len] != '\0' && input_string[begin_len] != ':') 
+    { /* adding valid ip to another string (ip isolation) */
 
+        save_ip += input_string[begin_len]; // added ip to save_ip variable .
+        begin_len++; // go to next word .
+    }
 
-        if (input_string[begin_len] == '.') // dot counter . dot should be 3 .
-        {
-                save_ip += input_string[begin_len]; // adding dot to save_ip variable  .
-                begin_len++; // go to next word .
-
-        } // end outer of if
-
-    } // end of loop (while )
 } // end of function (read ip)
 
 
@@ -616,18 +665,7 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
 { /* create account with entrance inforamtion and validation of information. */
 
         string save_ip; // add user`s ip to this variable .
-        bool valid_username_bl = true; // true mean : entrance username is valid .
         bool valid_ip_bl = true; // true mean : entrance ip is valid .
-
-
-        if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
-        {
-            Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
-                       "Punctuation Character Should Not Be Used");
-            // complete_bank_accoount = false; // mean pre account was not use ...
-            system("pause");
-            Re_Enter_String(input_string ,customer_class);
-        }
         
 
         if (end_account_range == true) // We have restrictions for creating an account
@@ -673,45 +711,15 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
         }
 
 
-        Read_IP(input_string ,len_default_string ,customer_class ,save_ip); // read ip from input string .
+        Read_IP(input_string ,len_default_string ,save_ip); // read ip from input string .
         
 
         if( Is_Valid_IP(save_ip) == false) // ip validation .
         {
             Print_Eror("Your Entrance IP Is Not Valid" , "empty");
             system("pause");
-            complete_bank_accoount = false;
-            Re_Enter_String(input_string ,customer_class);
-        }
-
-
-        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
-        {
-            Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
-            cout << "Just Enter User Name Without Any Command Or Words" << endl;
-            cout << "Liek This Exaple --->  Alex " << endl;
-            cout << "Enter User Name Under This Line :)" << endl;
-            fflush(stdin);
-            getline(cin ,save_username);
-
-            Check_Exit_Command(save_username); // if exit command entered we execute it .
-
-            if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
-            {
-                Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
-                valid_username_bl = false;
-                continue;
-            }
-
-            if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
-            {
-                Print_Eror("Your Entrance User Name Not Valid" , "empty");
-                system("pause");
-                valid_username_bl = false;
-                continue;
-            }
-
-            valid_username_bl = true;
+            complete_bank_accoount = false; // this section mean that entrance ip not valid .
+            Re_Enter_String(input_string ,customer_class); // enter string again .
         }
 
         
@@ -729,11 +737,11 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
             {
                 Print_Eror("Your Entrance IP Is Not Valid" , "empty");
                 system("pause");
-                valid_ip_bl = false;
+                valid_ip_bl = false; // mean that entrance ip not valid .
                 continue;
             }
 
-            valid_ip_bl = true;
+            valid_ip_bl = true; // mean that entrance ip is valid .
         }
         
 
