@@ -30,7 +30,7 @@ class user
     unsigned short int get_opening_day(); // return opening day of account .
     unsigned short int get_expiration_year(); // return expiratoin of account .
     unsigned int get_card_number(); // get card number of account .
-
+    unsigned short int get_count_extra_ip();
 
     /* ------------------->  OTHER Class Functions   <---------------------- */
 
