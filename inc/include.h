@@ -43,8 +43,8 @@ bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character
 void Create_And_Check_Card_Number(user *&);
 bool Is_Repetitive_UserName(user *& , string & , bool);
 bool Is_Repetitive_ip(user *& , string & , bool);
-void Read_User_Name(string &  , unsigned short int &  , user *&  , string & );
-void Read_IP(string &  , unsigned short int &  ,user *&  , string & );
+void Read_User_Name(string &  , unsigned short int &  , string & );
+void Read_IP(string &  , unsigned short int & , string & );
 bool Is_Valid_UserName(string &);
 bool Is_Valid_IP(string &);
 void Check_Exit_Command(string &);
