@@ -121,6 +121,12 @@ string user :: get_extra_ip(unsigned short int len)
 
 
 
+unsigned short int user :: get_count_extra_ip()
+{
+    return count_extra_ip;
+}
+
+
 
 /* ------------------------------------------------>    OTHER Class Functions   <------------------------------------------------------ */
 
@@ -553,6 +559,17 @@ bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_i
         {
             return true; // mean that we found repetitve ip .
         }
+
+            if (customer_class[global_count].get_count_extra_ip() != 0)
+            {
+                for (size_t j = 0; j < customer_class[global_count].get_count_extra_ip() ; j++)
+                {
+                    if (ip_string == customer_class[global_count].get_extra_ip(j))
+                    {
+                        return true;
+                    }
+                }
+            }
     }
     
     return false; // ip was not amoung previus accounts ip .
@@ -820,13 +837,13 @@ void Add_Extra_IP(user *& customer_class ,unsigned short int & len_default_strin
         Read_IP(input_string ,len_default_string ,save_ip);
         IP_Checker(save_ip ,input_string ,customer_class);
 
-        if (input_string[len_default_string] != ':')
+        if (input_string[len_default_string] != ':' && input_string[len_default_string] == '\0')
         {
+            customer_class[global_count].set_extra_ip(customer_class ,global_count ,save_ip);
             break;
         }
-        
-        
 
+        customer_class[global_count].set_extra_ip(customer_class ,global_count ,save_ip);
         len_default_string++;
     }
 }
