@@ -4,7 +4,7 @@
 #include<ctime>
 #include<string>
 
-#define SIZE 1
+#define SIZE 2
 
 using namespace std ;
 
@@ -143,7 +143,7 @@ void user :: Increase_String_Array(unsigned short int target_account , user *& c
 
             for (size_t i = 0; i < count_extra_ip ; i++)
             {
-                new_string[i] = customer_class[target_account].get_extra_ip(i);
+                new_string[i] = customer_class[target_account - 1].get_extra_ip(i);
             }
 
             if (count_extra_ip == 1)
@@ -213,20 +213,30 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
         Recognize_Commands(input_string ,customer_class); // at the end of this function we put input string validation .
         
-        // if (global_count == 2)
-        // {
-        //     for (size_t i = 0; i < global_count ; i++)
-        //     {
-        //         cout << endl << "--------------------------------------------" << endl;
-        //         cout << "user name \t" << customer_class[i].get_user_name() << endl;
-        //         cout << "ip \t" << customer_class[i].get_ip() << endl;
-        //         cout << "yeaer month day \t" << customer_class[i].get_opening_year()
-        //         << " " << customer_class[i].get_opening_month() << " " << customer_class[i].get_opening_day() << endl;
-        //         cout <<"expiration of account " << customer_class[i].get_expiration_year() << endl;
-        //         cout << "Card NUmbver\t" << customer_class[i].get_card_number();
-        //     }
-        //     break;
-        // }   
+        cout << "ENter\t" << global_count << endl;
+        if (global_count == 2)
+        {
+            cout << "WE ARE HERE" << endl;
+            for (size_t i = 0; i < global_count ; i++)
+            {
+                cout << endl << "--------------------------------------------" << endl;
+                cout << "user name \t" << customer_class[i].get_user_name() << endl;
+                cout << "ip \t" << customer_class[i].get_ip() << endl;
+                cout << "yeaer month day \t" << customer_class[i].get_opening_year()
+                << " " << customer_class[i].get_opening_month() << " " << customer_class[i].get_opening_day() << endl;
+                cout <<"expiration of account " << customer_class[i].get_expiration_year() << endl;
+                cout << "Card NUmbver\t" << customer_class[i].get_card_number() << endl;
+                
+                if (customer_class[i].get_count_extra_ip() != 0)
+                {
+                    for (size_t j = 0; j < customer_class[i].get_count_extra_ip() ; j++)
+                    {
+                        cout << "extra ip\t" << customer_class[i].get_extra_ip(j) << endl;
+                    }
+                }
+            }
+            break;
+        }   
     } // end of loop (while)
 } // end of function (re_enter_string)
 
@@ -234,7 +244,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
 void Recognize_Commands(string & input_string , user *& customer_class) // recognize command and execute relavent command .
 {
-    string default_command[] = {"create"}; // contain all of known commands in the app .
+    string default_command[] = {"create" , "add_ip"}; // contain all of known commands in the app .
 
     unsigned short int number_of_known_command ; // show us which command to execute .
 
@@ -259,12 +269,11 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         }
         
         len_default_string++; // go to next word index ..
-        static bool first_entrance = false;
+        static bool first_entrance = true;
         bool valid_username_bl = true; // true mean : entrance username is valid .
 
 
         Read_User_Name(input_string ,len_default_string ,save_username); // read user name from entrance string .
-
 
         if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
         {
@@ -275,7 +284,7 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         }
 
 
-        if (true == first_entrance)
+        if (false == first_entrance)
         {
             while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
             {
@@ -312,9 +321,9 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         } // end of if (true == first_entrance)
         
 
-        if (first_entrance == false) // at the first time we just have one name and we can not compare it with previous .
+        if (first_entrance == true) // at the first time we just have one name and we can not compare it with previous .
         {
-            first_entrance = true;
+            first_entrance = false;
         }
         
 
@@ -325,21 +334,21 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
             Re_Enter_String(input_string , customer_class); // enter string again .
         }
 
-
+    
     switch (number_of_known_command) // Each command has its own text
     {
         case 0 : // mean user entered "create" command .
 
         Create_Account(customer_class ,save_username ,input_string ,len_default_string); // create account with entrance information.
-
+        
         break; // break of switch case 
 
         case 1 : // mean user entered "Add_ip" command .
 
 
-
         break;
     }
+
 } // end of function (recognize_command) .
 
 
@@ -553,18 +562,19 @@ bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_i
         return true; // because we want to manage this . we also consider invalid ip repetitve .
     }
     
+
     for (size_t i = 0; i < global_count; i++) // check previous ip .
     {
         if (ip_string == customer_class[i].get_ip())
         {
             return true; // mean that we found repetitve ip .
         }
-
             if (customer_class[global_count].get_count_extra_ip() != 0)
             {
-                for (size_t j = 0; j < customer_class[global_count].get_count_extra_ip() ; j++)
+                cout << "count in repetitive\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
+                for (size_t j = 0; j < customer_class[global_count - 1].get_count_extra_ip() ; j++)
                 {
-                    if (ip_string == customer_class[global_count].get_extra_ip(j))
+                    if (ip_string == customer_class[global_count - 1].get_extra_ip(j))
                     {
                         return true;
                     }
@@ -774,7 +784,7 @@ void Read_IP(string & input_string , unsigned short int & begin_len , string & s
 
 void Create_Account(user *& customer_class ,string & save_username ,string & input_string ,unsigned short int & len_default_string)
 { /* create account with entrance inforamtion and validation of information. */
-
+        static bool first_entrance = true;
         string save_ip; // add user`s ip to this variable .
         
 
@@ -796,27 +806,33 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
         { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
 
             customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
+            cout << "812\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
             
         } // end of outer if
-
-
+        
         len_default_string++; // go to next word .
 
 
         Validation_After_Colon(input_string ,len_default_string ,customer_class);
 
-
+        cout << "820\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
         Read_IP(input_string ,len_default_string ,save_ip); // read ip from input string .
+
+        if (first_entrance == false)
+        {
+            IP_Checker(save_ip ,input_string ,customer_class);
+        }
         
-
-        IP_Checker(save_ip ,input_string ,customer_class);
-
-
-        customer_class[global_count - 1 ].set_user_name(save_username); // global_count Indicates how many classes are made .
+        if (first_entrance == true)
+        {
+            first_entrance = false;
+        }
+        
+        cout << "833\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
+        customer_class[global_count - 1].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
 
         Create_And_Check_Card_Number(customer_class); // create random card number (unique).
-
         complete_bank_accoount = true; // that`s mean we used the created account .and now we can add account for next user .
 
 } // end of function (create accout)
@@ -839,11 +855,11 @@ void Add_Extra_IP(user *& customer_class ,unsigned short int & len_default_strin
 
         if (input_string[len_default_string] != ':' && input_string[len_default_string] == '\0')
         {
-            customer_class[global_count].set_extra_ip(customer_class ,global_count ,save_ip);
+            customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip);
             break;
         }
 
-        customer_class[global_count].set_extra_ip(customer_class ,global_count ,save_ip);
+        customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip);
         len_default_string++;
     }
 }
@@ -864,7 +880,6 @@ void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class)
         Re_Enter_String(input_string ,customer_class); // enter string again .
     }
 
-    
     while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) ) // prevent same ip .
     {
         Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
