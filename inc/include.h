@@ -53,7 +53,8 @@ class user
     string ip_of_account = "no_ip"; // stored ip of account .
     unsigned short int count_record = 0; // record counter .
     string * ip_lists_ptr = nullptr; // stored extra ip`s .
-    unsigned short int count_extra_ip = 0; // extra ip counter .
+    // unsigned short int count_extra_ip = 0; // extra ip counter .
+    unsigned short int count_extra_ip = 0;
 
 
     /* ------------------->  OTHER Class Variable   <---------------------- */
