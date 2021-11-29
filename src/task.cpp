@@ -182,7 +182,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
     }
     
 
-    unsigned short int chance = 3; // we give the user`s 3 chance to enter correct string . 
+    unsigned short int chance = 3; // we give the users 3 chance to enter correct string . 
 
     while (true) // The output check command is implemented in this function
     {
@@ -213,10 +213,8 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
         Recognize_Commands(input_string ,customer_class); // at the end of this function we put input string validation .
         
-        cout << "ENter\t" << global_count << endl;
-        if (global_count == 2)
+        if (global_count == 3)
         {
-            cout << "WE ARE HERE" << endl;
             for (size_t i = 0; i < global_count ; i++)
             {
                 cout << endl << "--------------------------------------------" << endl;
@@ -248,7 +246,7 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
 
     unsigned short int number_of_known_command ; // show us which command to execute .
 
-    if(Is_Command_Entred(input_string ,number_of_known_command) == false) // check that entrance command exist or not .
+    if(Is_Command_Entred(input_string ,number_of_known_command ,default_command) == false) // check that entrance command exist or not .
     {
         Re_Enter_String(input_string ,customer_class); // user must be enter correct command .
     }
@@ -260,6 +258,7 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
 
         len_default_string = default_command[number_of_known_command].size(); // calculate length of "create" command .
 
+
         if( Is_Char_Exist(' ' ,input_string , len_default_string , false) == false )
         {  // like this createmamad .. we should be put space between command and useranme .
 
@@ -267,65 +266,23 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
             system("pause");
             Re_Enter_String(input_string ,customer_class);
         }
+
         
         len_default_string++; // go to next word index ..
-        static bool first_entrance = true;
-        bool valid_username_bl = true; // true mean : entrance username is valid .
 
 
         Read_User_Name(input_string ,len_default_string ,save_username); // read user name from entrance string .
 
-        if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
+        if (number_of_known_command == 0)
         {
-            Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
-                       "Punctuation Character Should Not Be Used");
-            system("pause");
-            Re_Enter_String(input_string ,customer_class);
+            UserName_Checker(save_username ,input_string ,customer_class ,false);
         }
-
-
-        if (false == first_entrance)
-        {
-            while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
+            else
             {
-                Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
-                cout << "Just Enter User Name Without Any Command Or Words" << endl;
-                cout << "Liek This Exaple --->  Alex " << endl;
-                cout << "Enter User Name Under This Line :)" << endl;
-                fflush(stdin);
-                getline(cin ,save_username);
+                UserName_Checker(save_username ,input_string ,customer_class ,true);
+            }
+            
 
-                Check_Exit_Command(save_username); // if exit command entered we execute it .
-
-
-                if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
-                {
-                    Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
-                    valid_username_bl = false; // mean that entrance string not valid .
-                    continue;
-                }
-
-
-                if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
-                {
-                    Print_Eror("Your Entrance User Name Not Valid" , "empty");
-                    system("pause");
-                    valid_username_bl = false; // mean that entrance string not valid 
-                    continue;
-                }
-
-                valid_username_bl = true; // if entrance username in this section is coorect we set true this variable .
-
-            } // end of loop (while)
-
-        } // end of if (true == first_entrance)
-        
-
-        if (first_entrance == true) // at the first time we just have one name and we can not compare it with previous .
-        {
-            first_entrance = false;
-        }
-        
 
         if ( Is_Char_Exist('\0' ,input_string ,len_default_string ,false) == true ) // like this create mamad
         {
@@ -345,6 +302,7 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
 
         case 1 : // mean user entered "Add_ip" command .
 
+        Add_Extra_IP(customer_class ,len_default_string ,input_string);
 
         break;
     }
@@ -569,12 +527,11 @@ bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_i
         {
             return true; // mean that we found repetitve ip .
         }
-            if (customer_class[global_count].get_count_extra_ip() != 0)
+            if (customer_class[i].get_count_extra_ip() != 0)
             {
-                cout << "count in repetitive\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
-                for (size_t j = 0; j < customer_class[global_count - 1].get_count_extra_ip() ; j++)
+                for (size_t j = 0; j < customer_class[i].get_count_extra_ip() ; j++)
                 {
-                    if (ip_string == customer_class[global_count - 1].get_extra_ip(j))
+                    if (ip_string == customer_class[i].get_extra_ip(j))
                     {
                         return true;
                     }
@@ -587,10 +544,9 @@ bool Is_Repetitive_ip(user *& customer_class , string & ip_string , bool valid_i
 
 
 
-bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string) // if we find command return true else false .
+bool Is_Command_Entred(string & input_string , unsigned short int & count_default_string ,string * default_command) // if we find command return true else false .
 { /* if command exist in the string return true else return false */
 
-    string default_command[] = {"create"}; // all of command that we can recognize in this program .
     bool find_command = false; // false means that we can not find default command in the entracne string .
     int find_out_put; // we store out put of find function in this variable .
     
@@ -784,7 +740,6 @@ void Read_IP(string & input_string , unsigned short int & begin_len , string & s
 
 void Create_Account(user *& customer_class ,string & save_username ,string & input_string ,unsigned short int & len_default_string)
 { /* create account with entrance inforamtion and validation of information. */
-        static bool first_entrance = true;
         string save_ip; // add user`s ip to this variable .
         
 
@@ -806,7 +761,6 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
         { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
 
             customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
-            cout << "812\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
             
         } // end of outer if
         
@@ -815,20 +769,10 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
 
         Validation_After_Colon(input_string ,len_default_string ,customer_class);
 
-        cout << "820\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
         Read_IP(input_string ,len_default_string ,save_ip); // read ip from input string .
 
-        if (first_entrance == false)
-        {
-            IP_Checker(save_ip ,input_string ,customer_class);
-        }
+        IP_Checker(save_ip ,input_string ,customer_class ,false);
         
-        if (first_entrance == true)
-        {
-            first_entrance = false;
-        }
-        
-        cout << "833\t" << customer_class[global_count - 1].get_count_extra_ip() << endl;
         customer_class[global_count - 1].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
 
@@ -851,7 +795,7 @@ void Add_Extra_IP(user *& customer_class ,unsigned short int & len_default_strin
     while (multy_ip_in_string)
     {
         Read_IP(input_string ,len_default_string ,save_ip);
-        IP_Checker(save_ip ,input_string ,customer_class);
+        IP_Checker(save_ip ,input_string ,customer_class ,false);
 
         if (input_string[len_default_string] != ':' && input_string[len_default_string] == '\0')
         {
@@ -868,9 +812,10 @@ void Add_Extra_IP(user *& customer_class ,unsigned short int & len_default_strin
 
 /* ------------------------------------------------>   CHECKER functions   <------------------------------------------------------ */
 
-void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class) //The IP checking set is stored in this function
+void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class , bool find_information) //The IP checking set is stored in this function
 {
     bool valid_ip_bl = true; // true mean : entrance ip is valid .
+    static bool first_entrance = true;
 
     if( Is_Valid_IP(save_ip) == false) // ip validation .
     {
@@ -880,25 +825,149 @@ void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class)
         Re_Enter_String(input_string ,customer_class); // enter string again .
     }
 
-    while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) ) // prevent same ip .
+    if (find_information && first_entrance == false)
     {
-        Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
-        cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
-        cout << "Like This Example ---> 1.2.3.4" << endl;
-        fflush(stdin);
-        getline(cin ,save_ip);
-
-        Check_Exit_Command(save_ip); // if exit command entered we execute it .
-
-        if ( Is_Valid_IP(save_ip) == false ) // pi validation .
+        while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) == false ) // we want find ip to execute commands .
         {
-            Print_Eror("Your Entrance IP Is Not Valid" , "empty");
-            system("pause");
-            valid_ip_bl = false; // mean that entrance ip not valid .
-            continue;
-        }
+            Print_Eror("This IP Does Not Exist" , "Enter Correct IP");
+            cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
+            cout << "Like This Example ---> 1.2.3.4" << endl;
+            fflush(stdin);
+            getline(cin ,save_ip);
 
-        valid_ip_bl = true; // mean that entrance ip is valid .
+            Check_Exit_Command(save_ip); // if exit command entered we execute it .
+
+            if ( Is_Valid_IP(save_ip) == false ) // pi validation .
+            {
+                Print_Eror("Your Entrance IP Is Not Valid" , "empty");
+                system("pause");
+                valid_ip_bl = false; // mean that entrance ip not valid .
+                continue;
+            }
+
+            valid_ip_bl = true; // mean that entrance ip is valid .
+        }
     }
+    
+        else if(find_information == false && first_entrance == false)
+        {
+            while ( Is_Repetitive_ip(customer_class , save_ip , valid_ip_bl) ) // prevent same ip .
+            {
+                Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
+                cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
+                cout << "Like This Example ---> 1.2.3.4" << endl;
+                fflush(stdin);
+                getline(cin ,save_ip);
+
+                Check_Exit_Command(save_ip); // if exit command entered we execute it .
+
+                if ( Is_Valid_IP(save_ip) == false ) // pi validation .
+                {
+                    Print_Eror("Your Entrance IP Is Not Valid" , "empty");
+                    system("pause");
+                    valid_ip_bl = false; // mean that entrance ip not valid .
+                    continue;
+                }
+
+                valid_ip_bl = true; // mean that entrance ip is valid .
+            }
+        }
+        
+
+    if (first_entrance == true)
+    {
+        first_entrance = false;
+    }
+    
 }
 
+
+
+void UserName_Checker(string & save_username , string & input_string ,user *& customer_class , bool find_username)
+{
+    bool valid_username_bl = true; // true mean : entrance username is valid .
+    static bool first_entrance = true;
+
+        if ( Is_Valid_UserName(save_username) == false ) // validation of usernaem
+        {
+            Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
+                       "Punctuation Character Should Not Be Used");
+            system("pause");
+            Re_Enter_String(input_string ,customer_class);
+        }
+
+    if (find_username && first_entrance == false)
+    {
+        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) == false) // prevent same username .
+        {
+            Print_Eror("This User Name Not Exist" , "Enter Another one");
+            cout << "Just Enter User Name Without Any Command Or Words" << endl;
+            cout << "Liek This Exaple --->  Alex " << endl;
+            cout << "Enter User Name Under This Line :)" << endl;
+            fflush(stdin);
+            getline(cin ,save_username);
+
+            Check_Exit_Command(save_username); // if exit command entered we execute it .
+
+
+            if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
+            {
+                Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
+                valid_username_bl = false; // mean that entrance string not valid .
+                continue;
+            }
+
+
+            if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
+            {
+                Print_Eror("Your Entrance User Name Not Valid" , "empty");
+                system("pause");
+                valid_username_bl = false; // mean that entrance string not valid 
+                continue;
+            }
+
+            valid_username_bl = true; // if entrance username in this section is coorect we set true this variable .
+
+        } // end of loop (while)
+    } // end of if (find_username && first_entrance == flase)
+
+        else if (find_username == false && first_entrance == false)
+        {
+            while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) ) // prevent same username .
+            {
+                Print_Eror("Someone Has Already Entered This USER_NAME" , "Enter Another one");
+                cout << "Just Enter User Name Without Any Command Or Words" << endl;
+                cout << "Liek This Exaple --->  Alex " << endl;
+                cout << "Enter User Name Under This Line :)" << endl;
+                fflush(stdin);
+                getline(cin ,save_username);
+
+                Check_Exit_Command(save_username); // if exit command entered we execute it .
+
+
+                if ( save_username[save_username.size() - 1] == ' ') // end of user name can not be space .
+                {
+                    Print_Eror("Can Not Enter Space At The End Of User name" , "empty");
+                    valid_username_bl = false; // mean that entrance string not valid .
+                    continue;
+                }
+
+
+                if ( Is_Valid_UserName(save_username) == false ) // username validatiobn .
+                {
+                    Print_Eror("Your Entrance User Name Not Valid" , "empty");
+                    system("pause");
+                    valid_username_bl = false; // mean that entrance string not valid 
+                    continue;
+                }
+
+                valid_username_bl = true; // if entrance username in this section is coorect we set true this variable .
+
+            } // end of loop (while)
+        } // end of else if(find_username == flase && first_entrance == false)
+        
+    if (first_entrance == true)
+    {
+        first_entrance = false;
+    }
+}
