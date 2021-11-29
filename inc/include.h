@@ -79,7 +79,7 @@ void Validation_After_Colon(string &  ,unsigned short int  ,user *& ); // after 
 
 /* ------------------------------------------------>    IS functions   <------------------------------------------------------ */
 
-bool Is_Command_Entred(string &  , unsigned short int & ); // if command exist in the entrance string return true else return false .
+bool Is_Command_Entred(string &  , unsigned short int & , string *); // if command exist in the entrance string return true else return false .
 bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character of word exist in index of string we return true .
 bool Is_Repetitive_UserName(user *& , string & , bool); // prevent from same user name .
 bool Is_Repetitive_ip(user *& , string & , bool);       // prevent from same ip
@@ -103,7 +103,7 @@ void Add_Extra_IP(user *& , unsigned short int & ,string &);            // execu
 
 /* ------------------------------------------------>   CHECKER functions   <------------------------------------------------------ */
 
-void IP_Checker(string &  ,string &  ,user *& ); // The IP checking set is stored in this function
-void UserName_Checker();
+void IP_Checker(string &  ,string &  ,user *& ,bool); // The IP checking set is stored in this function
+void UserName_Checker(string &  , string &  ,user *&  , bool);
 
 #endif
