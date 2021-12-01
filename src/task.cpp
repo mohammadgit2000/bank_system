@@ -3,13 +3,13 @@
 #include<cctype>
 #include<ctime>
 #include<string>
+#include<windows.h>
 
-#define SIZE 2
+#define SIZE 4
 
 using namespace std ;
 
 extern unsigned int global_count ; // at the first time ---> 0
-bool complete_bank_accoount = true; // if all of entrance information was correct we can add create new account .
 bool end_account_range = false; // We can't add a new account when all the card numbers are gone .
 unsigned short int chance_for_end_range = 3; // We give only 3 chances to the user not to enter the create section anymore .
 
@@ -53,14 +53,27 @@ void user:: set_card_number(unsigned int ranmdom_number) // set card number of c
 
 
 void user :: set_extra_ip(user *& customer_class ,unsigned short int target_account , string ip_string)
-{
-    Increase_String_Array(target_account ,customer_class);
-    count_extra_ip++;
+{ /* set extra ip`s in ip list of accounts  */
 
-    ip_lists_ptr[count_extra_ip - 1] = ip_string;
+    Increase_String_Array(target_account ,customer_class); // increase size of array
+    count_extra_ip++; // added one by one to extra ip variable .
+
+    ip_lists_ptr[count_extra_ip - 1] = ip_string; // put ip string in variable 
 }
 
 
+
+void user :: decrease_money(long double input_money)
+{
+    balance -= input_money;
+}
+
+
+
+void user :: increase_money(long double input_money)
+{
+    balance += input_money;
+}
 
 
 /* ------------------------------------------------>    GET Class Functions   <------------------------------------------------------ */
@@ -114,18 +127,24 @@ unsigned int user :: get_card_number() // return card number of account.
 
 
 
-string user :: get_extra_ip(unsigned short int len)
+string user :: get_extra_ip(unsigned short int len) // indicate extra ip`s
 {
     return ip_lists_ptr[len];
 }
 
 
 
-unsigned short int user :: get_count_extra_ip()
+unsigned short int user :: get_count_extra_ip() // indicate how many ip`s we have .
 {
     return count_extra_ip;
 }
 
+
+
+long double user :: get_balance()
+{
+    return balance;
+}
 
 
 /* ------------------------------------------------>    OTHER Class Functions   <------------------------------------------------------ */
@@ -151,6 +170,7 @@ void user :: Increase_String_Array(unsigned short int target_account , user *& c
                 delete ip_lists_ptr ;
                 ip_lists_ptr = new_string;
             }
+
                 else
                 {
                     delete [] ip_lists_ptr;
@@ -158,9 +178,8 @@ void user :: Increase_String_Array(unsigned short int target_account , user *& c
                 }
 
              return;   
-        }
+        } // end of else if (count_extra_ip >= 1)
 }
-
 
 
 
@@ -175,7 +194,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
     system("cls");
 
-    if (global_count == 9999 && complete_bank_accoount == true)
+    if (global_count == 9999)
     {
         Print_Eror("You Can Not Register A New Bank Account" , "Out Of Range") ;
         end_account_range = true;
@@ -206,7 +225,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
             fflush(stdin); // clear buffer .
             getline(cin ,input_string);
             chance--; // decrease chance one by one 
-        } // end of loop (while)
+        } // end of while (true)
 
 
         Check_Exit_Command(input_string); // if user enter exit command this function can recognize and exit .
@@ -233,7 +252,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
                     }
                 }
             }
-            break;
+            exit(EXIT_SUCCESS);
         }   
     } // end of loop (while)
 } // end of function (re_enter_string)
@@ -242,7 +261,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
 void Recognize_Commands(string & input_string , user *& customer_class) // recognize command and execute relavent command .
 {
-    string default_command[] = {"create" , "add_ip"}; // contain all of known commands in the app .
+    string default_command[] = {"create" , "add_ip" ,"renewal" ,"deposit"}; // contain all of known commands in the app .
 
     unsigned short int number_of_known_command ; // show us which command to execute .
 
@@ -305,7 +324,57 @@ void Recognize_Commands(string & input_string , user *& customer_class) // recog
         Add_Extra_IP(customer_class ,len_default_string ,input_string);
 
         break;
-    }
+
+        case 2 :
+
+        if( Is_Renewal_Date_Arrived(customer_class ,global_count) )
+        {
+            char renew_ch ;
+
+            cout << "Do You Want To Renew Bank Account ?? ( Pay 10/000 T )" << endl;
+            cout << " 'y' __ 'Y' __ '1' Mean Renew My Account" << endl;
+            cout << " 'n' __ 'N' __ '0' Mean Do Not Renew My Account" << endl;
+            cout << "if you want return to command line tap in enter" << endl;
+            fflush(stdin);
+            cin.get(renew_ch);
+
+            if (renew_ch == '\n')
+            {
+                Re_Enter_String(input_string ,customer_class);
+            }
+            
+
+            if (renew_ch == 'y' || renew_ch == 'Y' || renew_ch == '1')
+            {
+                if ( Is_Enough_Money(customer_class ,10000) )
+                {
+                    customer_class[global_count - 1].decrease_money(10000);
+                    cout << "#=#    We Renew Your Account For 2 Years    #=#" << endl;
+                    system("pause");
+                }
+            }
+                else if (renew_ch == 'n' || renew_ch == 'N' || renew_ch == '0')
+                {
+                    cout << "You did not want your bank account to be renewed" << endl;
+                    system("pause");
+                }
+                    else
+                    {
+                        cout << "!!    You Entered Wrong Character    !!" << endl;
+                        system("pause");
+                        Re_Enter_String(input_string ,customer_class);
+                    }
+                    
+        }
+
+        break;
+
+        case 3 :
+
+
+
+        break;
+    } // end if switch (number_of_known_command)
 
 } // end of function (recognize_command) .
 
@@ -469,12 +538,11 @@ void Check_Exit_Command(string & input_string) // check if entrance string had a
 
 
 void Validation_After_Colon(string & input_string ,unsigned short int len_default_string ,user *& customer_class)
-{
+{ 
     if ( Is_Char_Exist('\0' , input_string ,len_default_string ,false) == true ) // like this --> create mamad:
     {
         Print_Eror("We Can Not Detect IP" , "IP Not Entered");
         system("pause");
-        complete_bank_accoount = false; // pre account was not use .
         Re_Enter_String(input_string , customer_class); // enter string again .
     }
     
@@ -483,8 +551,27 @@ void Validation_After_Colon(string & input_string ,unsigned short int len_defaul
     {
         Print_Eror("IP Not Entered . Just Dot Entered" , "Invalid IP Entered");
         system("pause");
-        complete_bank_accoount = false; // pre account was not use .
         Re_Enter_String(input_string ,customer_class); // enter steirg again .
+    }
+}
+
+
+
+void Display_Loading() // displlay Loading . . . . . . .
+{
+    unsigned int number = 0;
+
+    while (number < 5)
+    {
+        system("cls");
+        cout << "Loading" ;
+
+        for (size_t i = 0; i < 10; i++)
+        {
+            Sleep(50);
+            cout << " ." ;
+        }
+        number++;
     }
 }
 
@@ -706,11 +793,24 @@ bool Is_Valid_IP(string & ip_string) // ip validation
 
 
 
+bool Is_Enough_Money(user *& customer_class ,long double money)
+{
+    if (customer_class[global_count - 1].get_balance() - money < 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+
+
 
 /* ------------------------------------------------>    READ Functions   <------------------------------------------------------ */
 
 void Read_User_Name(string & input_string , unsigned short int & begin_len , string & save_username)
 { /* read user name from input string  */
+
+    save_username.clear();
 
     while ( input_string[begin_len] != ':' && input_string[begin_len] != '\0' ) // read string until reaches to : 
     {
@@ -723,7 +823,7 @@ void Read_User_Name(string & input_string , unsigned short int & begin_len , str
 
 void Read_IP(string & input_string , unsigned short int & begin_len , string & save_ip)
 { /* read ip from input string  */
-
+    save_ip.clear();
     while (input_string[begin_len] != '\0' && input_string[begin_len] != ':') 
     { /* adding valid ip to another string (ip isolation) */
 
@@ -741,7 +841,6 @@ void Read_IP(string & input_string , unsigned short int & begin_len , string & s
 void Create_Account(user *& customer_class ,string & save_username ,string & input_string ,unsigned short int & len_default_string)
 { /* create account with entrance inforamtion and validation of information. */
         string save_ip; // add user`s ip to this variable .
-        
 
         if (end_account_range == true) // We have restrictions for creating an account
         {
@@ -757,55 +856,57 @@ void Create_Account(user *& customer_class ,string & save_username ,string & inp
         }
         
 
-        if (complete_bank_accoount == true) 
-        { /* count_deafult_string = 0 --> "create entered" --- information_added mean befor account used and we can crate new one */
-
-            customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
-            
-        } // end of outer if
-        
         len_default_string++; // go to next word .
 
 
-        Validation_After_Colon(input_string ,len_default_string ,customer_class);
+        Validation_After_Colon(input_string ,len_default_string ,customer_class); // after colon must be correct string .
 
         Read_IP(input_string ,len_default_string ,save_ip); // read ip from input string .
 
-        IP_Checker(save_ip ,input_string ,customer_class ,false);
+        IP_Checker(save_ip ,input_string ,customer_class ,false); // validation and repetitve checking  .
         
+        customer_class = Increase_Class(customer_class); // add one by one to acounts and copy before accounts .
+
         customer_class[global_count - 1].set_user_name(save_username); // global_count Indicates how many classes are made .
         customer_class[global_count - 1].set_ip(save_ip); // when we have 2 class . we must add information to class[1]
 
         Create_And_Check_Card_Number(customer_class); // create random card number (unique).
-        complete_bank_accoount = true; // that`s mean we used the created account .and now we can add account for next user .
 
 } // end of function (create accout)
 
 
 
 void Add_Extra_IP(user *& customer_class ,unsigned short int & len_default_string ,string & input_string)
-{
+{ /* adding extra ip to account . */
+
     len_default_string++; // go to next word of ':' .
 
-    Validation_After_Colon(input_string ,len_default_string ,customer_class);
+    Validation_After_Colon(input_string ,len_default_string ,customer_class); // after colon must be correct string .
 
-    bool multy_ip_in_string = true;
-    string save_ip;
+    string save_ip; // define variable .
 
-    while (multy_ip_in_string)
+    while (true) // multyiple IP`s maybe be entered .
     {
-        Read_IP(input_string ,len_default_string ,save_ip);
-        IP_Checker(save_ip ,input_string ,customer_class ,false);
+        Read_IP(input_string ,len_default_string ,save_ip); // read ip from input string .
 
-        if (input_string[len_default_string] != ':' && input_string[len_default_string] == '\0')
+        IP_Checker(save_ip ,input_string ,customer_class ,false); // validation and repetitve checking .
+
+        if (input_string[len_default_string] != ':' && input_string[len_default_string] == '\0') // if we reached last ip
         {
-            customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip);
+            customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip); // set ip 
             break;
         }
 
-        customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip);
-        len_default_string++;
+        customer_class[global_count - 1].set_extra_ip(customer_class ,global_count ,save_ip); /// set ip
+        len_default_string++; // go to next word .
     }
+}
+
+
+
+void Deposit(long double input_money)
+{
+
 }
 
 
@@ -821,7 +922,6 @@ void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class 
     {
         Print_Eror("Your Entrance IP Is Not Valid" , "empty");
         system("pause");
-        complete_bank_accoount = false; // this section mean that entrance ip not valid .
         Re_Enter_String(input_string ,customer_class); // enter string again .
     }
 
@@ -831,9 +931,15 @@ void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class 
         {
             Print_Eror("This IP Does Not Exist" , "Enter Correct IP");
             cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
-            cout << "Like This Example ---> 1.2.3.4" << endl;
+            cout << "Like This Example ---> 1.2.3.4 (if you want return to command line tap on enter)" << endl;
             fflush(stdin);
             getline(cin ,save_ip);
+
+            if (save_ip.empty())
+            {
+                Re_Enter_String(input_string ,customer_class);
+            }
+            
 
             Check_Exit_Command(save_ip); // if exit command entered we execute it .
 
@@ -855,9 +961,14 @@ void IP_Checker(string & save_ip ,string & input_string ,user *& customer_class 
             {
                 Print_Eror("Someone Has Already Entered This IP" , "Enter Another One");
                 cout << "Now Just Enter IP Without Extra Command OR Words" << endl;
-                cout << "Like This Example ---> 1.2.3.4" << endl;
+                cout << "Like This Example ---> 1.2.3.4 (if you want return to command line tap on enter)" << endl;
                 fflush(stdin);
                 getline(cin ,save_ip);
+
+                if (save_ip.empty())
+                {
+                    Re_Enter_String(input_string ,customer_class);
+                }
 
                 Check_Exit_Command(save_ip); // if exit command entered we execute it .
 
@@ -893,12 +1004,12 @@ void UserName_Checker(string & save_username , string & input_string ,user *& cu
             Print_Eror("Invalid User Name . First Character Of User Name Can Not Be Begin Wih Number" ,
                        "Punctuation Character Should Not Be Used");
             system("pause");
-            Re_Enter_String(input_string ,customer_class);
+            Re_Enter_String(input_string ,customer_class); // enter string again .
         }
 
     if (find_username && first_entrance == false)
     {
-        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) == false) // prevent same username .
+        while ( Is_Repetitive_UserName(customer_class ,save_username ,valid_username_bl) == false) // find user name between accounts.
         {
             Print_Eror("This User Name Not Exist" , "Enter Another one");
             cout << "Just Enter User Name Without Any Command Or Words" << endl;
@@ -966,8 +1077,35 @@ void UserName_Checker(string & save_username , string & input_string ,user *& cu
             } // end of loop (while)
         } // end of else if(find_username == flase && first_entrance == false)
         
-    if (first_entrance == true)
+    if (first_entrance == true) //at the first time should not compare information with previous .
     {
         first_entrance = false;
     }
 }
+
+
+
+bool Is_Renewal_Date_Arrived(user *& customer_class ,unsigned short int target) // check renewal date .
+{
+    time_t now = time(0);
+
+    tm * date = localtime(&now);
+
+    unsigned int this_year = date->tm_year + 1900; // we recive year from this function and store it .
+    unsigned int this_month = date->tm_mon + 1; // we recive month from this finction and store it .
+    unsigned int this_day = date->tm_mday; // we recive day from this finction and store it .
+
+    if (customer_class[target - 1].get_expiration_year() == this_year)
+    {
+        if (customer_class[target - 1].get_opening_month() == this_month)
+        {
+            if (customer_class[target - 1].get_opening_day() == this_day)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
