@@ -11,7 +11,8 @@ int main()
     user * customer_cls = nullptr;
     string input_string = "for first entrance"; // recive string from input ...
 
-    Display_Loading(); // display loading . . . . . . . .
+    // Display_Loading(); // display loading . . . . . . . .
+    system("cls");
 
     cout << "We Will Continue To Work Until The Exit Command Is Entered" << endl;
     cout << "!!  Write One Of Exit Command To Exit ---> exit - Exit - EXIT - 0  !!" << endl;
