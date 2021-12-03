@@ -7,7 +7,7 @@ using namespace std;
 
 class user
 {
-    public :
+    public : /* <--------------- public */
 
     user(); // consttructore just set date of account like opening and expiration .
 
@@ -21,10 +21,7 @@ class user
 
     void set_extra_ip(user*& ,unsigned short int ,string); // set extra ip of account .
 
-    void decrease_money(long double);
-
-    void increase_money(long double);
-
+    
 
     /* ------------------->  GET Class Functions   <---------------------- */
 
@@ -46,15 +43,20 @@ class user
 
     unsigned short int get_count_extra_ip();
 
-    long double get_balance();
+    long long int get_balance();
 
 
     /* ------------------->  OTHER Class Functions   <---------------------- */
 
-    void Increase_String_Array(unsigned short int , user *& customer_class); // increase string length.
+    void Increase_Extra_Ip_List(unsigned short int , user *& customer_class); // increase string length.
 
+    void decrease_money(long long int);
 
-    private :
+    void increase_money(long long int);
+
+    void renew_date_account();
+
+    private : /*<------------------ private*/
 
     /* ------------------->  DATE Class Variable   <---------------------- */
 
@@ -86,7 +88,10 @@ class user
 
     string * record_ptr = nullptr; // stored all of records .
 
-    long double balance = 0; // stored balance of account .
+    long long int balance = 0; // stored balance of account .
+
+    string * personal_transaction = nullptr;
+
 }; // END OF CLASS (User)
 
 
@@ -105,7 +110,7 @@ void Check_Exit_Command(string &); // if exit command entered we execute it .
 
 void Create_And_Check_Card_Number(user *&); // create eandom number and check with previous card numbers .
 
-void Validation_After_Colon(string &  ,unsigned short int  ,user *& ); // after colon should not be entered '.' or '\0'
+bool Validation_After_Colon(string &  ,unsigned short int  ,user *& ); // after colon should not be entered '.' or '\0'
 
 void Display_Loading();
 
@@ -117,9 +122,9 @@ bool Is_Command_Entred(string &  , unsigned short int & , string *); // if comma
 
 bool Is_Char_Exist(char , string & ,unsigned short int , bool ); // if character of word exist in index of string we return true .
 
-bool Is_Repetitive_UserName(user *& , string & , bool); // prevent from same user name .
+bool Is_Repetitive_UserName(user *& , string & , bool ,int &); // prevent from same user name .
 
-bool Is_Repetitive_ip(user *& , string & , bool); // prevent from same ip
+bool Is_Repetitive_ip(user *& , string & , bool ,int &); // prevent from same ip
 
 bool Is_Valid_UserName(string &); // user name validation .
 
@@ -127,7 +132,7 @@ bool Is_Valid_IP(string &); // ip validation .
 
 bool Is_Renewal_Date_Arrived(user *& customer_class ,unsigned short int); // check renewal date .
 
-bool Is_Enough_Money(user *& ,long double);
+bool Is_Enough_Money(user *& ,long long int ,unsigned short int);
 
 
 
@@ -145,16 +150,19 @@ void Create_Account(user *& ,string & ,string & ,unsigned short int &); // execu
 
 void Add_Extra_IP(user *& , unsigned short int & ,string &); // execute "add_ip" command  .
 
-void Deposit(long double);
+void Re_New_Account_Date(user *& ,string &  ,unsigned short int & , int);
+
+void Deposit(unsigned short int & ,string & ,user *& ,int);
 
 
 
 /* ------------------------------------------------>   CHECKER functions   <------------------------------------------------------ */
 
-void IP_Checker(string &  ,string &  ,user *& ,bool); // The IP checking set is stored in this function
+bool IP_Checker(string &  ,string &  ,user *& ,bool ,int &); // The IP checking set is stored in this function
 
-void UserName_Checker(string &  , string &  ,user *&  , bool);
+bool UserName_Checker(string &  , string &  ,user *&  , bool ,int &);
 
+bool Money_Checker(long long int &  ,string &  ,user *&  ,unsigned short int & );
 
 
 #endif
