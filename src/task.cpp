@@ -5,14 +5,15 @@
 #include<string>
 #include<windows.h>
 
-#define SIZE 4
+#define SIZE 5
 
 using namespace std ;
 
 extern unsigned int global_count ; // at the first time ---> 0
 bool end_account_range = false; // We can't add a new account when all the card numbers are gone .
 unsigned short int chance_for_end_range = 3; // We give only 3 chances to the user not to enter the create section anymore .
-
+unsigned int report_counter = 0;
+bank_transaction bank_class ;
 
 
 user :: user() // constructore just create opening and expiration date of account ..
@@ -55,12 +56,25 @@ void user:: set_card_number(unsigned int ranmdom_number) // set card number of c
 void user :: set_extra_ip(user *& customer_class ,unsigned short int target_account , string ip_string)
 { /* set extra ip`s in ip list of accounts  */
 
-    Increase_String_Array(target_account ,customer_class); // increase size of array
+    Increase_Extra_Ip_Length(target_account ,customer_class); // increase size of array
     count_extra_ip++; // added one by one to extra ip variable .
 
     ip_lists_ptr[count_extra_ip - 1] = ip_string; // put ip string in variable 
 }
 
+
+
+void bank_transaction :: set_bank_report(string report_string)
+{
+    report_list_ptr[report_counter - 1] = report_string;
+}
+
+
+
+void user :: set_personal_report(string report_string)
+{
+    personal_report_list[personal_report_counter - 1] = report_string;
+}
 
 
 
@@ -135,9 +149,29 @@ long long int user :: get_balance()
 }
 
 
+
+string bank_transaction :: get_bank_report(unsigned short int target)
+{
+    return report_list_ptr[target];
+}
+
+
+
+unsigned int user :: get_personal_count()
+{
+    return personal_report_counter;
+}
+
+
+string user :: get_personal_report(unsigned int target)
+{
+    return personal_report_list[target];
+}
+
+
 /* ------------------------------------------------>    OTHER Class Functions   <------------------------------------------------------ */
 
-void user :: Increase_Extra_Ip_List(unsigned short int target_account , user *& customer_class)
+void user :: Increase_Extra_Ip_Length(unsigned short int target_account , user *& customer_class)
 {
     if (count_extra_ip == 0)
     {
@@ -190,6 +224,79 @@ void user :: renew_date_account()
     expiration_account_year += 2;
 }
 
+
+
+void bank_transaction ::  Increase_Report_length()
+{
+    static bool first_entrance = true ;
+
+    if (first_entrance == true)
+    {
+        report_list_ptr = new string ;
+        first_entrance = false;
+        report_counter++;
+    }
+        else
+        {
+            string * new_ptr = new string [report_counter + 1];
+
+            for (size_t i = 0; i < report_counter ; i++)
+            {
+                new_ptr[i] = report_list_ptr[i];
+            }
+            
+            if (report_counter == 1)
+            {
+                delete report_list_ptr ;
+                report_list_ptr = new_ptr ;
+            }
+                else
+                {
+                    delete [] report_list_ptr ;
+                    report_list_ptr = new_ptr;
+                }
+                
+            report_counter++;
+        }
+}
+
+
+
+
+void user :: increase_personal_report()
+{
+    static bool first_entrance = true ;
+
+    if (first_entrance == true)
+    {
+        first_entrance = false ;
+
+        personal_report_list = new string ;
+
+        personal_report_counter++;
+    }
+        else
+        {
+            string * new_ptr = new string [personal_report_counter + 1];
+
+            for (size_t i = 0; i < personal_report_counter; i++)
+            {
+                new_ptr[i] = personal_report_list[i];
+            }
+            
+            if (personal_report_counter == 1)
+            {
+                delete personal_report_list;
+                personal_report_list = new_ptr;
+            }
+                else
+                {
+                    delete [] personal_report_list;
+                    personal_report_list = new_ptr;
+                }
+            personal_report_counter++;
+        }
+}
 
 
 
@@ -261,7 +368,19 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
                     }
                 }
                 cout << "balance\t" << customer_class[i].get_balance() << endl;
+
+                for (size_t j = 0; j < customer_class[i].get_personal_count(); j++)
+                {
+                    cout << "report  " << customer_class[i].get_personal_report(j) << endl;
+                }
+                
             }
+
+            for (size_t i = 0; i < report_counter; i++)
+            {
+                cout << bank_class.get_bank_report(i) << endl;
+            }
+            
             exit(EXIT_SUCCESS);
         }   
     } // end of loop (while)
@@ -271,7 +390,7 @@ void Re_Enter_String(string & input_string , user *& customer_class) // In this 
 
 void Recognize_Commands(string & input_string , user *& customer_class) // recognize command and execute relavent command .
 {
-    string default_command[] = {"create" , "add_ip" ,"renewal" ,"deposit"}; // contain all of known commands in the app .
+    string default_command[] = {"create" , "add_ip" ,"renewal" ,"deposit" ,"transfer"}; // contain all of known commands in the app .
 
     unsigned short int number_of_known_command ; // show us which command to execute .
 
@@ -557,6 +676,17 @@ void Display_Loading() // displlay Loading . . . . . . .
 }
 
 
+
+void Storing_All_Report(string report_string ,user *& customer_class ,unsigned int target)
+{
+    bank_class.Increase_Report_length();
+
+    bank_class.set_bank_report(report_string);
+
+    customer_class[target].increase_personal_report();
+
+    customer_class[target].set_personal_report(report_string);
+}
 
 
 /* ------------------------------------------------>    is Functions   <------------------------------------------------------ */
@@ -956,9 +1086,6 @@ void Re_New_Account_Date(user *& customer_class,string & input_string ,unsigned 
     {
         if( Is_Enough_Money(customer_class ,20000 ,user_target) )
         {
-            cout << customer_class[user_target].get_balance() << endl;
-            cout << user_target << "\t" << ip_target << endl;
-
             customer_class[user_target].decrease_money(20000);
 
             customer_class[user_target].renew_date_account();
@@ -1072,7 +1199,17 @@ void Deposit(unsigned short int & len_default_string ,string & input_string , us
         cout << "$$   The Deposit Was Successfuly   $$" << endl;
         cout << "Deposit ====>   " << money_reciver << "  Toman" << endl;
         system("pause");
-    }
+
+        string string_concatenation = "Deposit ";
+        string_concatenation += customer_class[user_target].get_user_name();
+        string_concatenation += ":";
+        string_concatenation += save_ip;
+        string_concatenation += ":";
+        string_concatenation += to_string(money_reciver);
+
+        Storing_All_Report(string_concatenation ,customer_class ,user_target);
+
+    } // end of if (user_target == ip_target)
 }
 
 
