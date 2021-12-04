@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.00)
 project(bank)
-add_executable(app src/exer2.cpp task.cpp)
-include_directories(inc)
+add_executable(app tamrin/src/exer2.cpp tamrin/task.cpp)
+include_directories(tamrin/inc)
