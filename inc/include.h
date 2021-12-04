@@ -21,6 +21,7 @@ class user
 
     void set_extra_ip(user*& ,unsigned short int ,string); // set extra ip of account .
 
+    void set_personal_report(string);
     
 
     /* ------------------->  GET Class Functions   <---------------------- */
@@ -45,16 +46,23 @@ class user
 
     long long int get_balance();
 
+    unsigned int get_personal_count();
+
+    string get_personal_report(unsigned int);
+
+
 
     /* ------------------->  OTHER Class Functions   <---------------------- */
 
-    void Increase_Extra_Ip_List(unsigned short int , user *& customer_class); // increase string length.
+    void Increase_Extra_Ip_Length(unsigned short int , user *& customer_class); // increase string length.
 
     void decrease_money(long long int);
 
     void increase_money(long long int);
 
     void renew_date_account();
+
+    void increase_personal_report();
 
     private : /*<------------------ private*/
 
@@ -90,10 +98,28 @@ class user
 
     long long int balance = 0; // stored balance of account .
 
-    string * personal_transaction = nullptr;
+    string * personal_report_list = nullptr;
+
+    unsigned int personal_report_counter = 0;
 
 }; // END OF CLASS (User)
 
+
+
+class bank_transaction
+{
+    public :
+
+    void set_bank_report(string);
+
+    void Increase_Report_length();
+
+    string get_bank_report(unsigned short int);
+
+    private :
+
+    string * report_list_ptr = nullptr ;
+};
 
 
 /* ------------------------------------------------>    OTHER Functions   <------------------------------------------------------ */
@@ -113,6 +139,8 @@ void Create_And_Check_Card_Number(user *&); // create eandom number and check wi
 bool Validation_After_Colon(string &  ,unsigned short int  ,user *& ); // after colon should not be entered '.' or '\0'
 
 void Display_Loading();
+
+void Storing_All_Report(string ,user *& ,unsigned int);
 
 
 
